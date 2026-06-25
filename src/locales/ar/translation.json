@@ -1,0 +1,17 @@
+{
+  "welcome": "أهلاً وسهلاً",
+  "dashboard": "لوحة التحكم",
+  "features": "الميزات",
+  "pricing": "الأسعار",
+  "community": "المجتمع",
+  "about": "حول",
+  "contact": "اتصل",
+  "login": "تسجيل الدخول",
+  "register": "التسجيل",
+  "logout": "تسجيل الخروج",
+  "startFreeScan": "ابدأ المسح المجاني",
+  "watchDemo": "شاهد العرض",
+  "stopGuessing": "توقف عن التخمين.",
+  "startProtecting": "ابدأ الحماية.",
+  "heroSubtitle": "كشف احتيالي مدعوم بالذكاء الاصطناعي للمستقلين."
+}

@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+/* Add your custom CSS below */
+:root {
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #000000;
+  --color-card-bg: #0a0a0a;
+  --color-border: #1a1a1a;
+
+  --color-primary: #61FF8B;
+  --color-primary-light: #8DFFAC;
+  --color-primary-dark: #1DB954;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0A0A0;
+
+  --color-danger: #FF4D4D;
+  --color-warning: #FFB020;
+  --color-success: #61FF8B;
+}
+
+.dark {
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #000000;
+  --color-card-bg: #0a0a0a;
+  --color-border: #1a1a1a;
+
+  --color-primary: #61FF8B;
+  --color-primary-light: #8DFFAC;
+  --color-primary-dark: #1DB954;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0A0A0;
+
+  --color-danger: #FF4D4D;
+  --color-warning: #FFB020;
+  --color-success: #61FF8B;
+}
+
+/* Tailwind Theme – keep your existing @theme block */
+@theme {
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-card-bg: var(--color-card-bg);
+  --color-border: var(--color-border);
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-danger: var(--color-danger);
+  --color-warning: var(--color-warning);
+  --color-success: var(--color-success);
+
+  --color-dark: var(--color-bg-primary);
+  --color-dark-card: var(--color-card-bg);
+  --color-dark-border: var(--color-border);
+  --color-light: var(--color-bg-secondary);
+  --color-light-border: var(--color-border);
+
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  @apply font-body bg-bg-primary text-text-primary transition-colors duration-300;
+}
+
+/* ... rest of your custom CSS (glass, neon-glow, etc.) ... */
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.dark .glass {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: rgba(97, 255, 139, 0.15);
+}
+
+/* Glowing elements */
+.neon-glow {
+  box-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary);
+}
+.neon-border {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 6px var(--color-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--color-primary-dark); border-radius: 3px; }
+
+/* ===== NEW PREMIUM HERO ANIMATIONS ===== */
+
+/* Reveal panel sliding up */
+@keyframes revealUp {
+  from { transform: translateY(0); }
+  to { transform: translateY(-100%); }
+}
+
+/* Sweep light moving right */
+@keyframes sweep {
+  from { left: -30%; }
+  to { left: 130%; }
+}
+
+/* Slow spin for shield rings */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes spin-slow-reverse {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+/* Fade in with upward motion */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Utility classes for the animations */
+.animate-revealUp {
+  animation: revealUp 1.4s ease-in-out forwards;
+}
+
+.animate-sweep {
+  animation: sweep 4s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+.animate-spin-slow-reverse {
+  animation: spin-slow-reverse 10s linear infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Staggered delays (used inline or as classes) */
+.delay-100 { animation-delay: 0.1s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-1000 { animation-delay: 1s; }
+
+/* ===== EXISTING ANIMATIONS (keep) ===== */
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes circuit-move {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 1000; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}

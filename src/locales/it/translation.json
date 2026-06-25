@@ -1,0 +1,17 @@
+{
+  "welcome": "Benvenuto",
+  "dashboard": "Dashboard",
+  "features": "Caratteristiche",
+  "pricing": "Prezzi",
+  "community": "Comunità",
+  "about": "Chi siamo",
+  "contact": "Contatto",
+  "login": "Accedi",
+  "register": "Registrati",
+  "logout": "Esci",
+  "startFreeScan": "Inizia Scansione Gratuita",
+  "watchDemo": "Guarda Demo",
+  "stopGuessing": "Smetti di Indovinare.",
+  "startProtecting": "Inizia a Proteggere.",
+  "heroSubtitle": "Rilevamento truffe basato sull'IA per freelance."
+}

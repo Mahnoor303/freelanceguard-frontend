@@ -1,0 +1,18 @@
+npx nodemon server.js.....for backend running
+
+email:admin@gmail.com  passd:admin123
+
+admin register:
+post 
+http://localhost:5000/api/admin/register
+{
+  "name": "Super Admin",
+  "email": "admin@gmail.com",
+  "password": "admin123",
+  "role": "superadmin"
+}
+
+mongodb+srv://mughalmahnoor247_db_user:QdKqc0ER2fu0jSF4@cluster0.aimc5j9.mongodb.net/?appName=Cluster0
+
+
+ab login/register ka popup show nhi ho raha h or navbar m multi lanuage ka dropdown b tu hona chaiy

@@ -1,0 +1,17 @@
+{
+  "welcome": "Hoş Geldiniz",
+  "dashboard": "Panel",
+  "features": "Özellikler",
+  "pricing": "Fiyatlandırma",
+  "community": "Topluluk",
+  "about": "Hakkında",
+  "contact": "İletişim",
+  "login": "Giriş",
+  "register": "Kayıt Ol",
+  "logout": "Çıkış",
+  "startFreeScan": "Ücretsiz Tarama Başlat",
+  "watchDemo": "Demoyu İzle",
+  "stopGuessing": "Tahmin Etmeyi Bırak.",
+  "startProtecting": "Korumaya Başla.",
+  "heroSubtitle": "Serbest çalışanlar için yapay zeka destekli dolandırıcılık tespiti."
+}
