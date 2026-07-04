@@ -64,6 +64,7 @@ export default function PricingCard() {
   ];
 
   const handleCardClick = (planCode) => {
+    window.scrollTo(0, 0); 
     if (!user) {
       // Not logged in → open register modal with message
       if (openRegister) {

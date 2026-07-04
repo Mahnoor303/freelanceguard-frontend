@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Shield, MessageSquare, FileText, Search,
   History, Users, Settings, Bookmark, Flag, Home, ShieldCheck,
-  BookOpen,  Video, ScrollText, Map, Calculator, FolderKanban // 👈 add this
+  BookOpen,  Video, ScrollText, Map, Calculator, FolderKanban, Briefcase // 👈 add this
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -14,6 +14,7 @@ const links = [
   { to: '/history', icon: History, label: 'History' },
   { to: '/portfolio-builder', icon: FolderKanban, label: 'Portfolio' },
   { to: '/saved-reports', icon: Bookmark, label: 'Saved Reports' },
+  { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
   { to: '/video-tutorials', icon: Video, label: 'Tutorials' },
   { to: '/contract-templates', icon: ScrollText, label: 'Templates' },
   { to: '/workspace', icon: BookOpen, label: 'Workspace' },

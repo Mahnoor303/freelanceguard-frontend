@@ -182,3 +182,11 @@ body {
 .animate-marquee {
   animation: marquee 20s linear infinite;
 }
+/* ===== Forcefully remove any green line that appears behind modals ===== */
+body.modal-open *,
+body.modal-open *::before,
+body.modal-open *::after {
+  border-color: transparent !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+}

@@ -34,60 +34,109 @@ export default function LoginModal({ onClose, switchToRegister }) {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(0,0,0,0.8)',
+        backgroundColor: 'rgba(0,0,0,0.9)',   // solid dark overlay, no transparency
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 99999,
+        border: 'none',            // ✅ NO border
+        outline: 'none',           // ✅ NO outline
+        boxShadow: 'none',         // ✅ NO shadow
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 w-full max-w-md relative"
+        style={{
+          background: '#0a0a0a',
+          border: '1px solid #333',    // neutral gray border, not green
+          borderRadius: '16px',
+          padding: '30px',
+          width: '100%',
+          maxWidth: '400px',
+          position: 'relative',
+          outline: 'none',
+          boxShadow: 'none',
+        }}
       >
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            background: 'none',
+            border: 'none',
+            color: '#aaa',
+            cursor: 'pointer',
+          }}
+        >
           <X size={20} />
         </button>
 
-        <h2 className="text-2xl font-heading font-bold mb-6 text-white">Login</h2>
-        {error && <p className="text-red-400 mb-3 text-sm">{error}</p>}
+        <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
+          Login
+        </h2>
+        {error && <p style={{ color: '#FF4D4D', fontSize: '14px', marginBottom: '12px' }}>{error}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <input
-            required type="email" placeholder="Email"
-            className="w-full p-3 rounded-xl bg-black border border-gray-700 text-white"
-            value={email} onChange={(e) => setEmail(e.target.value)}
+            required
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              padding: '12px',
+              background: '#000',
+              border: '1px solid #444',
+              borderRadius: '12px',
+              color: 'white',
+              outline: 'none',
+            }}
           />
           <input
-            required type="password" placeholder="Password"
-            className="w-full p-3 rounded-xl bg-black border border-gray-700 text-white"
-            value={password} onChange={(e) => setPassword(e.target.value)}
+            required
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              padding: '12px',
+              background: '#000',
+              border: '1px solid #444',
+              borderRadius: '12px',
+              color: 'white',
+              outline: 'none',
+            }}
           />
           <button
-            disabled={loading} type="submit"
-            className="w-full bg-primary text-black font-semibold py-3 rounded-xl disabled:opacity-50"
+            type="submit"
+            disabled={loading}
+            style={{
+              padding: '14px',
+              background: '#1DB954',      // dark green (your new primary)
+              color: '#000',
+              fontWeight: 'bold',
+              border: 'none',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              opacity: loading ? 0.6 : 1,
+            }}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-center text-gray-400">
+        <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#aaa' }}>
           Don't have an account?{' '}
-          <button onClick={switchToRegister} className="text-primary">Register</button>
-        </p>
-
-        {/* Admin login link */}
-        <div className="mt-3 text-center">
           <button
-            onClick={() => {
-              onClose();
-              navigate('/admin/login');
-            }}
-            className="text-xs text-gray-500 hover:text-primary"
+            onClick={switchToRegister}
+            style={{ color: '#1DB954', background: 'none', border: 'none', cursor: 'pointer' }}
           >
-            Login as Admin
+            Register
           </button>
-        </div>
+        </p>
       </div>
     </div>
   );

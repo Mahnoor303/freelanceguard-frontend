@@ -23,9 +23,7 @@ export default function RegisterModal({ onClose, switchToLogin }) {
   const { register } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [form, setForm] = useState({
-    name: '', email: '', password: '', freelanceNiche: '', country: ''
-  });
+  const [form, setForm] = useState({ name: '', email: '', password: '', freelanceNiche: '', country: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -55,27 +53,86 @@ export default function RegisterModal({ onClose, switchToLogin }) {
   };
 
   return (
-    <div style={{ position:'fixed', top:0, left:0, width:'100vw', height:'100vh', backgroundColor:'rgba(0,0,0,0.8)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:99999 }}>
-      <div onClick={(e) => e.stopPropagation()} className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 w-full max-w-md relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={20} /></button>
-        <h2 className="text-2xl font-heading font-bold mb-6 text-white">{t('createAccount')}</h2>
-        {error && <p className="text-red-400 mb-3 text-sm">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input required placeholder={t('fullName')} className="w-full p-3 rounded-xl bg-black border border-gray-700 text-white" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
-          <input required type="email" placeholder={t('email')} className="w-full p-3 rounded-xl bg-black border border-gray-700 text-white" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} />
-          <input required type="password" placeholder={t('password')} className="w-full p-3 rounded-xl bg-black border border-gray-700 text-white" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} />
-          <input placeholder={t('freelanceNiche')} className="w-full p-3 rounded-xl bg-black border border-gray-700 text-white" value={form.freelanceNiche} onChange={(e) => setForm({...form, freelanceNiche: e.target.value})} />
-          <select required value={form.country} onChange={handleCountryChange} className="w-full p-3 rounded-xl bg-black border border-gray-700 text-white">
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0,0,0,0.9)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 99999,
+        border: 'none',
+        outline: 'none',
+        boxShadow: 'none',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#0a0a0a',
+          border: '1px solid #333',
+          borderRadius: '16px',
+          padding: '30px',
+          width: '100%',
+          maxWidth: '400px',
+          position: 'relative',
+          outline: 'none',
+          boxShadow: 'none',
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            background: 'none',
+            border: 'none',
+            color: '#aaa',
+            cursor: 'pointer',
+          }}
+        >
+          <X size={20} />
+        </button>
+
+        <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
+          {t('createAccount')}
+        </h2>
+        {error && <p style={{ color: '#FF4D4D', fontSize: '14px', marginBottom: '12px' }}>{error}</p>}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <input required placeholder={t('fullName')} value={form.name}
+            onChange={(e) => setForm({...form, name: e.target.value})}
+            style={{ padding: '12px', background: '#000', border: '1px solid #444', borderRadius: '12px', color: 'white', outline: 'none' }} />
+          <input required type="email" placeholder={t('email')} value={form.email}
+            onChange={(e) => setForm({...form, email: e.target.value})}
+            style={{ padding: '12px', background: '#000', border: '1px solid #444', borderRadius: '12px', color: 'white', outline: 'none' }} />
+          <input required type="password" placeholder={t('password')} value={form.password}
+            onChange={(e) => setForm({...form, password: e.target.value})}
+            style={{ padding: '12px', background: '#000', border: '1px solid #444', borderRadius: '12px', color: 'white', outline: 'none' }} />
+          <input placeholder={t('freelanceNiche')} value={form.freelanceNiche}
+            onChange={(e) => setForm({...form, freelanceNiche: e.target.value})}
+            style={{ padding: '12px', background: '#000', border: '1px solid #444', borderRadius: '12px', color: 'white', outline: 'none' }} />
+          <select required value={form.country} onChange={handleCountryChange}
+            style={{ padding: '12px', background: '#000', border: '1px solid #444', borderRadius: '12px', color: 'white', outline: 'none' }}>
             <option value="">{t('selectCountry')}</option>
             {countries.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-          <button disabled={loading} type="submit" className="w-full bg-primary text-black font-semibold py-3 rounded-xl disabled:opacity-50">
+          <button type="submit" disabled={loading}
+            style={{ padding: '14px', background: '#1DB954', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '12px', cursor: 'pointer', opacity: loading ? 0.6 : 1 }}>
             {loading ? t('creating') : t('createAccount')}
           </button>
         </form>
-        <p className="mt-4 text-sm text-center text-gray-400">
+
+        <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#aaa' }}>
           {t('alreadyHaveAccount')}{' '}
-          <button onClick={switchToLogin} className="text-primary">{t('login')}</button>
+          <button onClick={switchToLogin} style={{ color: '#1DB954', background: 'none', border: 'none', cursor: 'pointer' }}>
+            {t('login')}
+          </button>
         </p>
       </div>
     </div>

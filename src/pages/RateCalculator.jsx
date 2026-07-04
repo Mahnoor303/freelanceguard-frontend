@@ -53,7 +53,7 @@ export default function RateCalculator() {
     const expMultiplier = 1 + (experience - 1) * 0.1;
     const adjustedHourly = hourlyRate * expMultiplier;
     const adjustedDaily = dailyRate * expMultiplier;
-
+    sessionStorage.setItem('selectedSkills', JSON.stringify(skills));
     setResult({
       hourlyRate: adjustedHourly.toFixed(2),
       dailyRate: adjustedDaily.toFixed(2),

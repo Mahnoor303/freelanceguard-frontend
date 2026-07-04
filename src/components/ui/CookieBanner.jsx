@@ -30,12 +30,11 @@ export default function CookieBanner() {
       width: '100%',
       background: '#0B1510',
       color: '#E2E8F0',
-      borderTop: '1px solid #2C501C',
       padding: '12px 20px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      zIndex: 100000,
+      zIndex: 9999,
     }}>
       <span>This website uses cookies to enhance your experience.</span>
       <div style={{ display: 'flex', gap: '10px' }}>

@@ -13,10 +13,8 @@ import PricingCard from '../components/landing/PricingCard';
 import ExperienceSection from '../components/landing/ExperienceSection';
 import Footer from '../components/layout/Footer';
 import LanguageSwitcher from '../components/ui/LanguageSwitcher';
-import ScrollToTop from '../components/ui/ScrollToTop';
-import LoginModal from '../components/auth/LoginModal';
-import RegisterModal from '../components/auth/RegisterModal';
 import SEO from '../components/ui/SEO';
+import ScrollToTop from '../components/ui/ScrollToTop';
 import { useState } from 'react';
 
 export default function Landing({ dark, setDark, openLogin, openRegister }) {
@@ -25,30 +23,18 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
   const { user } = useAuth();
   const { t } = useTranslation();
 
-  // ----- Local modal state -----
-  const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-
-  const localOpenLogin = () => setShowLogin(true);
-  const localOpenRegister = () => setShowRegister(true);
-  const closeModals = () => {
-    setShowLogin(false);
-    setShowRegister(false);
-  };
-
-  const effectiveOpenLogin = openLogin || localOpenLogin;
-  const effectiveOpenRegister = openRegister || localOpenRegister;
+  // ❌ No local modal state – we use the global openLogin / openRegister directly
 
   const handleStartScan = () => {
     if (!user) {
-      effectiveOpenLogin();
+      openLogin();                // 👈 directly calls the global function
     } else {
       navigate('/job-analyzer');
     }
   };
 
   return (
-    <div className="relative">
+    <div>   {/* removed "relative" to avoid any layout issues */}
       <SEO title="Home" description="Protect your freelance work with AI scam detection." />
       {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-border">
@@ -70,8 +56,10 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
             </button>
             {!user ? (
               <>
-                <button onClick={effectiveOpenLogin} className="text-sm font-medium hover:text-primary">{t('login')}</button>
-                <button onClick={effectiveOpenRegister} className="bg-primary text-black px-4 py-2 rounded-lg font-semibold">
+                <button onClick={openLogin} className="text-sm font-medium hover:text-primary">
+                  {t('login')}
+                </button>
+                <button onClick={openRegister} className="bg-primary text-black px-4 py-2 rounded-lg font-semibold">
                   {t('getStarted')}
                 </button>
               </>
@@ -104,9 +92,7 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
         <div className="absolute w-[300px] h-[120%] bg-gradient-to-r from-transparent via-primary/10 to-transparent rotate-[20deg] -left-96 top-1/2 -translate-y-1/2 animate-sweep" />
         <div className="absolute inset-0 bg-black z-10 animate-revealUp" />
         <div className="relative z-20 flex flex-col items-center text-center px-6">
-          <p className="text-primary tracking-[4px] text-sm mb-5 opacity-0 animate-fadeIn delay-100">
-            {t('heroTag')}
-          </p>
+          {/* ❌ HeroTag line completely removed */}
           <h1 className="text-[clamp(60px,9vw,130px)] leading-[0.9] font-extrabold text-white opacity-0 animate-fadeIn delay-300">
             {t('stopGuessing')}<br />
             <span className="text-primary">{t('startProtecting')}</span>
@@ -154,15 +140,12 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
       <HowItWorks />
       <Testimonials />
       <ExperienceSection />
-
-      {/* Pricing */}
       <PricingCard />
-
       <FAQ />
       <FinalCTA />
       <Footer />
 
-      {/* Demo Video Modal */}
+      {/* Demo Video Modal (local, fine) */}
       {showDemo && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="relative bg-black border border-gray-800 rounded-2xl overflow-hidden max-w-4xl w-full">
@@ -176,22 +159,8 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
         </div>
       )}
 
-      {/* Login / Register Modals */}
-      {showLogin && (
-        <LoginModal
-          onClose={() => setShowLogin(false)}
-          switchToRegister={() => { setShowLogin(false); setShowRegister(true); }}
-        />
-      )}
-      {showRegister && (
-        <RegisterModal
-          onClose={() => setShowRegister(false)}
-          switchToLogin={() => { setShowRegister(false); setShowLogin(true); }}
-        />
-      )}
-      <button onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'} className="...">
-        Sign in with Google
-      </button>
+      {/* ❌ Login/Register modals now handled globally in App.jsx – removed from here */}
+
       <ScrollToTop />
     </div>
   );

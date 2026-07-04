@@ -56,6 +56,7 @@ import ChatAssistant from './pages/ChatAssistant';          // Keep route if dir
 import FreelancerRoadmap from './pages/FreelancerRoadmap';
 import RateCalculator from './pages/RateCalculator';
 import PortfolioBuilder from './pages/PortfolioBuilder';
+import JobMatcher from './pages/JobMatcher';
 import VirtualWorkspace from './pages/VirtualWorkspace';    // Keep route if direct access needed
 
 // ---------- Admin Pages ----------
@@ -123,6 +124,7 @@ function AppInner() {
           <Route path="/saved-reports" element={<ProtectedRoute><SavedReports /></ProtectedRoute>} />
           <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
           <Route path="/reports" element={<CommunityReports />} />
+          <Route path="/job-matcher" element={<ProtectedRoute><JobMatcher /></ProtectedRoute>} />
           <Route path="/submit-report" element={<ProtectedRoute><SubmitReport /></ProtectedRoute>} />
           <Route path="/submit-testimonial" element={<ProtectedRoute><SubmitTestimonial /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
