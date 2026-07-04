@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Search, Globe, Building2, Calendar, AlertTriangle, Save } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Globe, Building2, Calendar, AlertTriangle, Save, CheckCircle } from 'lucide-react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { api } from '../api';
 import toast from 'react-hot-toast';
+import ScanPDF from '../components/ScanPDF';
 
 export default function ClientLookup() {
   const [input, setInput] = useState('');
@@ -11,13 +12,16 @@ export default function ClientLookup() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async () => {
-    if (!input.trim()) return;
+  const runScan = async (text) => {
+    if (!text || text.trim().length < 5) {
+      toast.error('Input text is too short');
+      return;
+    }
     setLoading(true);
     try {
       const data = await api('/scan/client', {
         method: 'POST',
-        body: JSON.stringify({ inputText: input }),
+        body: JSON.stringify({ inputText: text }),
       });
       setResult(data);
       setSearched(true);
@@ -27,6 +31,19 @@ export default function ClientLookup() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const demoText = sessionStorage.getItem('demoScanText');
+    const demoType = sessionStorage.getItem('demoScanType');
+    if (demoText && demoType === 'client') {
+      setInput(demoText);
+      sessionStorage.removeItem('demoScanText');
+      sessionStorage.removeItem('demoScanType');
+      runScan(demoText);
+    }
+  }, []);
+
+  const handleSearch = () => runScan(input);
 
   const handleSave = async () => {
     if (!result) return;
@@ -55,7 +72,11 @@ export default function ClientLookup() {
           placeholder="Company Name / Email / Domain"
           className="flex-1 p-3 rounded-xl bg-black border border-gray-700"
         />
-        <button onClick={handleSearch} disabled={loading} className="bg-primary text-black px-6 rounded-xl flex items-center gap-2">
+        <button
+          onClick={handleSearch}
+          disabled={loading}
+          className="bg-primary text-black px-6 rounded-xl flex items-center gap-2"
+        >
           <Search size={18} /> Lookup
         </button>
       </div>
@@ -92,10 +113,11 @@ export default function ClientLookup() {
             ))}
           </div>
 
-          <div className="mt-6">
-            <button onClick={handleSave} className="bg-primary text-black px-6 py-2 rounded-lg flex items-center gap-2 mx-auto">
+          <div className="mt-6 flex justify-center gap-3">
+            <button onClick={handleSave} className="bg-primary text-black px-6 py-2 rounded-lg flex items-center gap-2">
               <Save size={16} /> Save Report
             </button>
+            <ScanPDF scan={result} />
           </div>
         </div>
       )}

@@ -9,6 +9,11 @@ import PremiumFeatureGuard from './components/ui/PremiumFeatureGuard';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import { HelmetProvider } from 'react-helmet-async';
 
+// ---------- Floating Tools ----------
+import FloatingChatButton from './components/ui/FloatingChatButton';
+import FloatingWorkspaceButton from './components/ui/FloatingWorkspaceButton';
+import OnboardingTour from './components/onboarding/OnboardingTour';
+
 // ---------- Layouts ----------
 import DashboardLayout from './components/layout/DashboardLayout';
 import AdminLayout from './components/layout/AdminLayout';
@@ -41,8 +46,17 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import FakePayment from './pages/FakePayment';
 import SubmitTestimonial from './pages/SubmitTestimonial';
-import Subscription from './pages/Subscription'; 
+import Subscription from './pages/Subscription';
 
+// ---------- New Beginner Features ----------
+import SampleScans from './pages/SampleScans';
+import VideoTutorials from './pages/VideoTutorials';
+import ContractTemplates from './pages/ContractTemplates';
+import ChatAssistant from './pages/ChatAssistant';          // Keep route if direct access needed
+import FreelancerRoadmap from './pages/FreelancerRoadmap';
+import RateCalculator from './pages/RateCalculator';
+import PortfolioBuilder from './pages/PortfolioBuilder';
+import VirtualWorkspace from './pages/VirtualWorkspace';    // Keep route if direct access needed
 
 // ---------- Admin Pages ----------
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -72,8 +86,9 @@ const PageLoader = () => (
 
 function AppInner() {
   const [dark, setDark] = useDarkMode();
+  const { user } = useAuth();  // 👈 needed for floating buttons
 
-  // Local modal state – completely independent of AuthContext
+  // Local modal state
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
@@ -86,19 +101,10 @@ function AppInner() {
 
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary transition-colors duration-300">
+      <OnboardingTour />
       <Routes>
         {/* Public */}
-        <Route
-          path="/"
-          element={
-            <Landing
-              dark={dark}
-              setDark={setDark}
-              openLogin={openLogin}
-              openRegister={openRegister}
-            />
-          }
-        />
+        <Route path="/" element={<Landing dark={dark} setDark={setDark} openLogin={openLogin} openRegister={openRegister} />} />
         <Route path="/features" element={<Suspense><Features dark={dark} setDark={setDark} /></Suspense>} />
         <Route path="/pricing" element={<Suspense><Pricing dark={dark} setDark={setDark} /></Suspense>} />
         <Route path="/about" element={<Suspense><About dark={dark} setDark={setDark} /></Suspense>} />
@@ -122,6 +128,16 @@ function AppInner() {
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/payment" element={<ProtectedRoute><FakePayment /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings dark={dark} setDark={setDark} /></ProtectedRoute>} />
+
+          {/* New Beginner Features */}
+          <Route path="/demo-scans" element={<ProtectedRoute><SampleScans /></ProtectedRoute>} />
+          <Route path="/video-tutorials" element={<ProtectedRoute><VideoTutorials /></ProtectedRoute>} />
+          <Route path="/contract-templates" element={<ProtectedRoute><ContractTemplates /></ProtectedRoute>} />
+          <Route path="/chat-assistant" element={<ProtectedRoute><ChatAssistant /></ProtectedRoute>} />        {/* Keep route for direct access */}
+          <Route path="/roadmap" element={<ProtectedRoute><FreelancerRoadmap /></ProtectedRoute>} />
+          <Route path="/rate-calculator" element={<ProtectedRoute><RateCalculator /></ProtectedRoute>} />
+          <Route path="/portfolio-builder" element={<ProtectedRoute><PortfolioBuilder /></ProtectedRoute>} />
+          <Route path="/workspace" element={<ProtectedRoute><VirtualWorkspace /></ProtectedRoute>} />        {/* Keep route for direct access */}
         </Route>
 
         {/* Admin */}
@@ -154,6 +170,14 @@ function AppInner() {
           onClose={closeModals}
           switchToLogin={() => { closeModals(); openLogin(); }}
         />
+      )}
+
+      {/* Floating Tools – only for logged‑in users */}
+      {user && (
+        <>
+          <FloatingChatButton />
+          <FloatingWorkspaceButton />
+        </>
       )}
     </div>
   );
@@ -192,22 +216,17 @@ export default function App() {
 
   return (
     <HelmetProvider>
-    <AuthProvider>
-      <ErrorBoundary>
-      {/* Cookie Banner – always visible, even during loader */}
-      <CookieBanner />
-
-      {/* Loader */}
-      <div ref={loaderRef} className={appReady ? 'pointer-events-none' : ''}>
-        <Loader />
-      </div>
-
-      {/* Main content (animated in) */}
-      <div ref={mainContentRef} className="opacity-0">
-        <AppInner />
-      </div>
-      </ErrorBoundary>
-    </AuthProvider>
+      <AuthProvider>
+        <ErrorBoundary>
+          <CookieBanner />
+          <div ref={loaderRef} className={appReady ? 'pointer-events-none' : ''}>
+            <Loader />
+          </div>
+          <div ref={mainContentRef} className="opacity-0">
+            <AppInner />
+          </div>
+        </ErrorBoundary>
+      </AuthProvider>
     </HelmetProvider>
   );
 }

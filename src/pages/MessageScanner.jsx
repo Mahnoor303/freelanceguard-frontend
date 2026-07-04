@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, Save } from 'lucide-react';
 import RiskMeter from '../components/ui/RiskMeter';
 import TypingEffect from '../components/ui/TypingEffect';
 import GlassCard from '../components/ui/GlassCard';
+import ScanPDF from '../components/ScanPDF';
 import { api } from '../api';
 import toast from 'react-hot-toast';
 
@@ -12,14 +13,17 @@ export default function MessageScanner() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleScan = async () => {
-    if (!input.trim()) return;
+  const runScan = async (text) => {
+    if (!text || text.trim().length < 5) {
+      toast.error('Input text is too short');
+      return;
+    }
     setStep('analyzing');
     setLoading(true);
     try {
       const data = await api('/scan/message', {
         method: 'POST',
-        body: JSON.stringify({ inputText: input }),
+        body: JSON.stringify({ inputText: text }),
       });
       setResult(data);
       setStep('result');
@@ -30,6 +34,19 @@ export default function MessageScanner() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const demoText = sessionStorage.getItem('demoScanText');
+    const demoType = sessionStorage.getItem('demoScanType');
+    if (demoText && demoType === 'message') {
+      setInput(demoText);
+      sessionStorage.removeItem('demoScanText');
+      sessionStorage.removeItem('demoScanType');
+      runScan(demoText);
+    }
+  }, []);
+
+  const handleScan = () => runScan(input);
 
   const handleSave = async () => {
     if (!result) return;
@@ -56,7 +73,11 @@ export default function MessageScanner() {
             placeholder="Paste Client Message..."
             className="w-full h-32 p-4 rounded-xl bg-black border border-gray-700 focus:ring-2 focus:ring-primary outline-none resize-none"
           />
-          <button onClick={handleScan} disabled={loading} className="bg-primary text-black px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+          <button
+            onClick={handleScan}
+            disabled={loading}
+            className="bg-primary text-black px-6 py-3 rounded-lg font-semibold flex items-center gap-2"
+          >
             <Shield size={18} /> Scan Message
           </button>
         </>
@@ -64,7 +85,10 @@ export default function MessageScanner() {
 
       {step === 'analyzing' && (
         <GlassCard className="text-center py-8">
-          <TypingEffect sequence={['Scanning message...', 1500, 'Checking patterns...', 1500, 'Evaluating risk...', 1500]} className="text-lg" />
+          <TypingEffect
+            sequence={['Scanning message...', 1500, 'Checking patterns...', 1500, 'Evaluating risk...', 1500]}
+            className="text-lg"
+          />
         </GlassCard>
       )}
 
@@ -109,9 +133,10 @@ export default function MessageScanner() {
             <p className="text-gray-300">{result.aiSummary}</p>
           </GlassCard>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             <button onClick={() => { setStep('input'); setInput(''); setResult(null); }} className="border border-primary text-primary px-6 py-2 rounded-lg">New Scan</button>
             <button onClick={handleSave} className="bg-primary text-black px-6 py-2 rounded-lg flex items-center gap-2"><Save size={16} /> Save Report</button>
+            <ScanPDF scan={result} />
           </div>
         </div>
       )}

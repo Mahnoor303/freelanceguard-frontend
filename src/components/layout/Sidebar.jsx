@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Shield, MessageSquare, FileText, Search,
-  History, Users, Settings, Bookmark, Flag, Home, ShieldCheck
+  History, Users, Settings, Bookmark, Flag, Home, ShieldCheck,
+  BookOpen,  Video, ScrollText, Map, Calculator, FolderKanban // 👈 add this
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -11,8 +12,15 @@ const links = [
   { to: '/job-analyzer', icon: Shield, label: 'Job Analyzer' },
   { to: '/message-scanner', icon: MessageSquare, label: 'Message Scanner' },
   { to: '/history', icon: History, label: 'History' },
+  { to: '/portfolio-builder', icon: FolderKanban, label: 'Portfolio' },
   { to: '/saved-reports', icon: Bookmark, label: 'Saved Reports' },
+  { to: '/video-tutorials', icon: Video, label: 'Tutorials' },
+  { to: '/contract-templates', icon: ScrollText, label: 'Templates' },
+  { to: '/workspace', icon: BookOpen, label: 'Workspace' },
+  { to: '/roadmap', icon: Map, label: 'Roadmap' },
+  { to: '/demo-scans', icon: BookOpen, label: 'Demo Scans' },
   { to: '/reports', icon: Flag, label: 'Community' },
+  { to: '/rate-calculator', icon: Calculator, label: 'Rate Calc' },
   { to: '/profile', icon: Users, label: 'Profile' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
@@ -21,7 +29,7 @@ export default function Sidebar() {
   const { user } = useAuth();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30">
+    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30 sidebar">
       {/* User name / brand */}
       <div className="p-6 font-heading font-bold text-2xl text-primary">
         {user?.name || 'FreelanceGuard'}

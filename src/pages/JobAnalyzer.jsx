@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, Save } from 'lucide-react';
 import RiskMeter from '../components/ui/RiskMeter';
 import TypingEffect from '../components/ui/TypingEffect';
@@ -13,14 +13,18 @@ export default function JobAnalyzer() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleAnalyze = async () => {
-    if (!input.trim()) return;
+  // Reusable scan function – used by both the button and demo
+  const runScan = async (text) => {
+    if (!text || text.trim().length < 5) {
+      toast.error('Input text is too short');
+      return;
+    }
     setStep('analyzing');
     setLoading(true);
     try {
       const data = await api('/scan/job', {
         method: 'POST',
-        body: JSON.stringify({ inputText: input }),
+        body: JSON.stringify({ inputText: text }),
       });
       setResult(data);
       setStep('result');
@@ -31,6 +35,20 @@ export default function JobAnalyzer() {
       setLoading(false);
     }
   };
+
+  // Check for demo text on mount
+  useEffect(() => {
+    const demoText = sessionStorage.getItem('demoScanText');
+    const demoType = sessionStorage.getItem('demoScanType');
+    if (demoText && demoType === 'jobPost') {
+      setInput(demoText);
+      sessionStorage.removeItem('demoScanText');
+      sessionStorage.removeItem('demoScanType');
+      runScan(demoText);
+    }
+  }, []);
+
+  const handleAnalyze = () => runScan(input);
 
   const handleSave = async () => {
     if (!result) return;
@@ -108,14 +126,10 @@ export default function JobAnalyzer() {
             <p className="text-gray-300">{result.aiSummary}</p>
           </GlassCard>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             <button onClick={() => { setStep('input'); setInput(''); setResult(null); }} className="border border-primary text-primary px-6 py-2 rounded-lg">New Scan</button>
             <button onClick={handleSave} className="bg-primary text-black px-6 py-2 rounded-lg flex items-center gap-2"><Save size={16} /> Save Report</button>
-            {result && (
-              <span className="inline-flex items-center bg-primary/20 text-primary px-6 py-2 rounded-lg font-semibold">
-                <ScanPDF scan={result} />
-              </span>
-            )}
+            <ScanPDF scan={result} />
           </div>
         </div>
       )}

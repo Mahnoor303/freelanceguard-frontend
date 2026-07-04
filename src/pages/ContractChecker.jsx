@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, FileText, AlertTriangle, Save, CheckCircle } from 'lucide-react';
 import RiskMeter from '../components/ui/RiskMeter';
 import TypingEffect from '../components/ui/TypingEffect';
 import GlassCard from '../components/ui/GlassCard';
+import ScanPDF from '../components/ScanPDF';
 import { api } from '../api';
 import toast from 'react-hot-toast';
-
 
 export default function ContractChecker() {
   const [input, setInput] = useState('');
@@ -14,14 +14,17 @@ export default function ContractChecker() {
   const [activeClause, setActiveClause] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleAnalyze = async () => {
-    if (!input.trim()) return;
+  const runScan = async (text) => {
+    if (!text || text.trim().length < 5) {
+      toast.error('Input text is too short');
+      return;
+    }
     setStep('analyzing');
     setLoading(true);
     try {
       const data = await api('/scan/contract', {
         method: 'POST',
-        body: JSON.stringify({ inputText: input }),
+        body: JSON.stringify({ inputText: text }),
       });
       setResult(data);
       setStep('result');
@@ -32,6 +35,19 @@ export default function ContractChecker() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const demoText = sessionStorage.getItem('demoScanText');
+    const demoType = sessionStorage.getItem('demoScanType');
+    if (demoText && demoType === 'contract') {
+      setInput(demoText);
+      sessionStorage.removeItem('demoScanText');
+      sessionStorage.removeItem('demoScanType');
+      runScan(demoText);
+    }
+  }, []);
+
+  const handleAnalyze = () => runScan(input);
 
   const handleSave = async () => {
     if (!result) return;
@@ -46,7 +62,6 @@ export default function ContractChecker() {
     }
   };
 
-  // Build clause list from redFlags and safeSigns
   const clauses = [];
   if (result) {
     result.redFlags?.forEach((f, i) => clauses.push({ id: `r${i}`, title: f, status: 'danger', desc: 'This clause was flagged as risky.' }));
@@ -69,7 +84,11 @@ export default function ContractChecker() {
             placeholder="Paste Contract Text..."
             className="w-full h-32 p-4 rounded-xl bg-black border border-gray-700 focus:ring-2 focus:ring-primary outline-none resize-none"
           />
-          <button onClick={handleAnalyze} disabled={loading} className="bg-primary text-black px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+          <button
+            onClick={handleAnalyze}
+            disabled={loading}
+            className="bg-primary text-black px-6 py-3 rounded-lg font-semibold flex items-center gap-2"
+          >
             <FileText size={18} /> Analyze Contract
           </button>
         </>
@@ -77,7 +96,10 @@ export default function ContractChecker() {
 
       {step === 'analyzing' && (
         <GlassCard className="text-center py-8">
-          <TypingEffect sequence={['Reviewing clauses...', 1500, 'Identifying red flags...', 1500, 'Generating report...', 1500]} className="text-lg" />
+          <TypingEffect
+            sequence={['Reviewing clauses...', 1500, 'Identifying red flags...', 1500, 'Generating report...', 1500]}
+            className="text-lg"
+          />
         </GlassCard>
       )}
 
@@ -121,9 +143,10 @@ export default function ContractChecker() {
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             <button onClick={() => { setStep('input'); setInput(''); setResult(null); }} className="border border-primary text-primary px-6 py-2 rounded-lg">New Scan</button>
             <button onClick={handleSave} className="bg-primary text-black px-6 py-2 rounded-lg flex items-center gap-2"><Save size={16} /> Save Report</button>
+            <ScanPDF scan={result} />
           </div>
         </div>
       )}
