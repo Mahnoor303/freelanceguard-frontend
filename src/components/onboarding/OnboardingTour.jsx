@@ -1,29 +1,36 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 
+// 💡 Turn this to FALSE after you’ve seen the tour
+const FORCE_TEST_MODE = true;   // <--- Change to false once it works
+
 const STEPS = [
   {
     selector: '.dashboard-header',
     title: 'Your Dashboard',
     content: 'Here you can see your total scans, risk distribution, and recent activity.',
+    fallback: 'Look at the top of the page for your dashboard header.',
     placement: 'bottom',
   },
   {
     selector: '.scan-button',
     title: 'Start a Scan',
     content: 'Use this button to analyse job posts, messages, contracts, or clients.',
+    fallback: 'Scroll down to the "Start Free Scan" button.',
     placement: 'top',
   },
   {
     selector: '.sidebar',
     title: 'Navigation',
     content: 'Access scanners, history, community reports, and settings from the sidebar.',
+    fallback: 'The sidebar is on the left side of the screen.',
     placement: 'right',
   },
   {
     selector: '.upgrade-card',
     title: 'Upgrade to Pro',
     content: 'Get unlimited scans, contract analysis, and advanced reports.',
+    fallback: 'Look for the subscription card in your dashboard.',
     placement: 'top',
   },
 ];
@@ -32,21 +39,29 @@ export default function OnboardingTour() {
   const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(false);
 
-  // Show tour only once
+  // ---------- START LOGIC ----------
   useEffect(() => {
+    // If test mode is on, ALWAYS show the tour (even if already seen)
+    if (FORCE_TEST_MODE) {
+      console.log('🧪 TEST MODE – tour will always appear');
+      const timer = setTimeout(() => setVisible(true), 1200);
+      return () => clearTimeout(timer);
+    }
+
     const done = localStorage.getItem('onboardingDone');
+    console.log('🗄️ onboardingDone:', done);
     if (!done) {
-      const timer = setTimeout(() => setVisible(true), 800);
+      const timer = setTimeout(() => setVisible(true), 1200);
       return () => clearTimeout(timer);
     }
   }, []);
 
-  // Scroll to the target element after a tiny delay, so the layout is stable
+  // ---------- SCROLL TO TARGET ----------
   const scrollToTarget = useCallback(() => {
     if (!visible || current >= STEPS.length) return;
     const el = document.querySelector(STEPS[current].selector);
     if (el) {
-      // Wait a few frames for any CSS transitions to finish
+      // Wait for any CSS transitions to finish
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -55,17 +70,17 @@ export default function OnboardingTour() {
     }
   }, [current, visible]);
 
-  // Trigger scroll when the step changes
   useEffect(() => {
     scrollToTarget();
   }, [scrollToTarget]);
 
+  // ---------- If not visible, return nothing ----------
   if (!visible || current >= STEPS.length) return null;
 
   const step = STEPS[current];
   const el = document.querySelector(step.selector);
 
-  // --- Styles ---
+  // ---------- TOOLTIP STYLE ----------
   const tooltipStyle = {
     position: 'fixed',
     zIndex: 100000,
@@ -98,7 +113,6 @@ export default function OnboardingTour() {
       pointerEvents: 'none',
     };
 
-    // Position tooltip based on placement, but keep it inside the viewport
     if (step.placement === 'bottom') {
       tooltipStyle.top = Math.min(viewportH - 280, rect.bottom + 12);
       tooltipStyle.left = Math.min(Math.max(10, rect.left + rect.width / 2 - 160), viewportW - 340);
@@ -109,23 +123,27 @@ export default function OnboardingTour() {
       tooltipStyle.top = Math.min(viewportH - 280, Math.max(10, rect.top + rect.height / 2 - 120));
       tooltipStyle.left = Math.min(viewportW - 340, rect.right + 12);
     } else {
-      // centered fallback
       tooltipStyle.top = '50%';
       tooltipStyle.left = '50%';
       tooltipStyle.transform = 'translate(-50%, -50%)';
     }
   } else {
-    // Element not found – show tooltip in the center
+    // Element not found – center the tooltip and show fallback text
     tooltipStyle.top = '50%';
     tooltipStyle.left = '50%';
     tooltipStyle.transform = 'translate(-50%, -50%)';
   }
 
+  const content = el ? step.content : step.fallback;
+
   const next = () => setCurrent((prev) => prev + 1);
   const prev = () => setCurrent((prev) => Math.max(0, prev - 1));
   const finish = () => {
     setVisible(false);
-    localStorage.setItem('onboardingDone', 'true');
+    if (!FORCE_TEST_MODE) {
+      localStorage.setItem('onboardingDone', 'true');
+    }
+    // In test mode, never save the flag so it always appears
   };
 
   return (
@@ -138,7 +156,7 @@ export default function OnboardingTour() {
             <X size={18} />
           </button>
         </div>
-        <p className="text-sm text-gray-300 mb-4">{step.content}</p>
+        <p className="text-sm text-gray-300 mb-4">{content}</p>
         <div className="flex justify-between items-center">
           <span className="text-xs text-gray-500">
             Step {current + 1} of {STEPS.length}
