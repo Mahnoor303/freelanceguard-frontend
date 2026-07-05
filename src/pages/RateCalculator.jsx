@@ -2,18 +2,10 @@ import { useState } from 'react';
 import { Calculator, Clock, DollarSign, TrendingUp, Briefcase, Lightbulb } from 'lucide-react';
 
 const skillOptions = [
-  'Graphic Design',
-  'Web Development',
-  'Content Writing',
-  'Social Media Management',
-  'Video Editing',
-  'UI/UX Design',
-  'Data Entry',
-  'Translation',
-  'Mobile App Development',
-  'SEO',
-  'Digital Marketing',
-  'Illustration',
+  'Graphic Design', 'Web Development', 'Content Writing',
+  'Social Media Management', 'Video Editing', 'UI/UX Design',
+  'Data Entry', 'Translation', 'Mobile App Development',
+  'SEO', 'Digital Marketing', 'Illustration',
 ];
 
 const skillSuggestions = {
@@ -45,15 +37,18 @@ export default function RateCalculator() {
   };
 
   const calculate = () => {
+    // SAVE SKILLS TO localStorage (persists even after navigation)
+    localStorage.setItem('selectedSkills', JSON.stringify(skills));
+
+    // Calculate rates
     const workingDays = 22;
     const totalHours = hoursPerDay * workingDays;
     const hourlyRate = desiredIncome / totalHours;
     const dailyRate = hourlyRate * hoursPerDay;
-    // Experience multiplier
     const expMultiplier = 1 + (experience - 1) * 0.1;
     const adjustedHourly = hourlyRate * expMultiplier;
     const adjustedDaily = dailyRate * expMultiplier;
-    sessionStorage.setItem('selectedSkills', JSON.stringify(skills));
+
     setResult({
       hourlyRate: adjustedHourly.toFixed(2),
       dailyRate: adjustedDaily.toFixed(2),

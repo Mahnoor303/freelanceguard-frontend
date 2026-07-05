@@ -1,37 +1,38 @@
-import { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, Shield, ScanLine, LayoutDashboard, Crown } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 
-const POPUP_STEPS = [
+const STEPS = [
   {
-    icon: LayoutDashboard,
+    selector: '.dashboard-header',
     title: 'Your Dashboard',
-    description:
-      'The dashboard shows your scan stats, risk distribution, charts, and recent activity at a glance.',
+    content: 'Here you can see your total scans, risk distribution, and recent activity.',
+    placement: 'bottom',
   },
   {
-    icon: ScanLine,
-    title: 'Start Scanning',
-    description:
-      'Use the "Start Free Scan" button or the sidebar to analyse job posts, messages, contracts, and clients.',
+    selector: '.scan-button',
+    title: 'Start a Scan',
+    content: 'Use this button to analyse job posts, messages, contracts, or clients.',
+    placement: 'top',
   },
   {
-    icon: Shield,
-    title: 'Navigate with the Sidebar',
-    description:
-      'Access all tools from the sidebar: scanners, history, community reports, and more.',
+    selector: '.sidebar',
+    title: 'Navigation',
+    content: 'Access scanners, history, community reports, and settings from the sidebar.',
+    placement: 'right',
   },
   {
-    icon: Crown,
-    title: 'Unlock Pro Features',
-    description:
-      'Upgrade to Pro for unlimited scans, contract analysis, advanced reports, and priority AI.',
+    selector: '.upgrade-card',
+    title: 'Upgrade to Pro',
+    content: 'Get unlimited scans, contract analysis, and advanced reports.',
+    placement: 'top',
   },
 ];
 
 export default function OnboardingTour() {
+  const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [step, setStep] = useState(0);
 
+  // Show tour only once
   useEffect(() => {
     const done = localStorage.getItem('onboardingDone');
     if (!done) {
@@ -40,86 +41,124 @@ export default function OnboardingTour() {
     }
   }, []);
 
+  // Scroll to the target element after a tiny delay, so the layout is stable
+  const scrollToTarget = useCallback(() => {
+    if (!visible || current >= STEPS.length) return;
+    const el = document.querySelector(STEPS[current].selector);
+    if (el) {
+      // Wait a few frames for any CSS transitions to finish
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
+    }
+  }, [current, visible]);
+
+  // Trigger scroll when the step changes
+  useEffect(() => {
+    scrollToTarget();
+  }, [scrollToTarget]);
+
+  if (!visible || current >= STEPS.length) return null;
+
+  const step = STEPS[current];
+  const el = document.querySelector(step.selector);
+
+  // --- Styles ---
+  const tooltipStyle = {
+    position: 'fixed',
+    zIndex: 100000,
+    background: '#0a0a0a',
+    border: '1px solid #61FF8B',
+    borderRadius: '16px',
+    padding: '20px',
+    maxWidth: '320px',
+    width: '90%',
+    color: '#E2E8F0',
+    boxShadow: '0 0 30px rgba(97,255,139,0.25)',
+  };
+
+  let spotlightStyle = null;
+
+  if (el) {
+    const rect = el.getBoundingClientRect();
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+
+    spotlightStyle = {
+      position: 'fixed',
+      top: rect.top - 4,
+      left: rect.left - 4,
+      width: rect.width + 8,
+      height: rect.height + 8,
+      borderRadius: 8,
+      boxShadow: '0 0 0 9999px rgba(0,0,0,0.75), 0 0 15px rgba(97,255,139,0.5)',
+      zIndex: 99998,
+      pointerEvents: 'none',
+    };
+
+    // Position tooltip based on placement, but keep it inside the viewport
+    if (step.placement === 'bottom') {
+      tooltipStyle.top = Math.min(viewportH - 280, rect.bottom + 12);
+      tooltipStyle.left = Math.min(Math.max(10, rect.left + rect.width / 2 - 160), viewportW - 340);
+    } else if (step.placement === 'top') {
+      tooltipStyle.top = Math.max(10, rect.top - 220);
+      tooltipStyle.left = Math.min(Math.max(10, rect.left + rect.width / 2 - 160), viewportW - 340);
+    } else if (step.placement === 'right') {
+      tooltipStyle.top = Math.min(viewportH - 280, Math.max(10, rect.top + rect.height / 2 - 120));
+      tooltipStyle.left = Math.min(viewportW - 340, rect.right + 12);
+    } else {
+      // centered fallback
+      tooltipStyle.top = '50%';
+      tooltipStyle.left = '50%';
+      tooltipStyle.transform = 'translate(-50%, -50%)';
+    }
+  } else {
+    // Element not found – show tooltip in the center
+    tooltipStyle.top = '50%';
+    tooltipStyle.left = '50%';
+    tooltipStyle.transform = 'translate(-50%, -50%)';
+  }
+
+  const next = () => setCurrent((prev) => prev + 1);
+  const prev = () => setCurrent((prev) => Math.max(0, prev - 1));
   const finish = () => {
     setVisible(false);
     localStorage.setItem('onboardingDone', 'true');
   };
 
-  const next = () => setStep((prev) => Math.min(prev + 1, POPUP_STEPS.length - 1));
-  const prev = () => setStep((prev) => Math.max(prev - 1, 0));
-
-  if (!visible) return null;
-
-  const current = POPUP_STEPS[step];
-
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[99999] p-4">
-      <div className="bg-[#0a0a0a] border-2 border-primary rounded-2xl p-8 max-w-md w-full relative shadow-[0_0_40px_rgba(97,255,139,0.3)]">
-        {/* Close button */}
-        <button
-          onClick={finish}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
-        >
-          <X size={20} />
-        </button>
-
-        {/* Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <current.icon className="text-primary" size={32} />
-          </div>
+    <div className="fixed inset-0 z-[99998] pointer-events-none">
+      {spotlightStyle && <div style={spotlightStyle} />}
+      <div style={tooltipStyle} className="pointer-events-auto">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="font-heading font-bold text-primary text-lg">{step.title}</h3>
+          <button onClick={finish} className="text-gray-400 hover:text-white">
+            <X size={18} />
+          </button>
         </div>
-
-        {/* Content */}
-        <h2 className="text-xl font-heading font-bold text-primary text-center mb-2">
-          {current.title}
-        </h2>
-        <p className="text-gray-300 text-center leading-relaxed mb-6">
-          {current.description}
-        </p>
-
-        {/* Step indicator */}
-        <div className="flex justify-center gap-2 mb-6">
-          {POPUP_STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                i === step ? 'bg-primary' : 'bg-gray-700'
-              }`}
-            />
-          ))}
-        </div>
-
-        {/* Navigation */}
+        <p className="text-sm text-gray-300 mb-4">{step.content}</p>
         <div className="flex justify-between items-center">
-          <div>
-            {step > 0 && (
-              <button
-                onClick={prev}
-                className="text-gray-400 hover:text-white p-1 transition"
-              >
-                <ChevronLeft size={20} />
+          <span className="text-xs text-gray-500">
+            Step {current + 1} of {STEPS.length}
+          </span>
+          <div className="flex gap-2">
+            {current > 0 && (
+              <button onClick={prev} className="text-gray-400 hover:text-white p-1">
+                <ChevronLeft size={18} />
+              </button>
+            )}
+            {current < STEPS.length - 1 ? (
+              <button onClick={next} className="bg-primary text-black px-3 py-1 rounded-lg text-sm font-semibold flex items-center gap-1">
+                Next <ChevronRight size={16} />
+              </button>
+            ) : (
+              <button onClick={finish} className="bg-primary text-black px-3 py-1 rounded-lg text-sm font-semibold">
+                Got it!
               </button>
             )}
           </div>
-          <span className="text-xs text-gray-500">
-            {step + 1} / {POPUP_STEPS.length}
-          </span>
-          {step < POPUP_STEPS.length - 1 ? (
-            <button
-              onClick={next}
-              className="bg-primary text-black px-4 py-2 rounded-lg font-semibold flex items-center gap-1 hover:scale-105 transition"
-            >
-              Next <ChevronRight size={16} />
-            </button>
-          ) : (
-            <button
-              onClick={finish}
-              className="bg-primary text-black px-4 py-2 rounded-lg font-semibold hover:scale-105 transition"
-            >
-              Got it!
-            </button>
-          )}
         </div>
       </div>
     </div>

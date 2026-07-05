@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';   // ✅ added useEffect
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -26,7 +26,10 @@ export default function RegisterModal({ onClose, switchToLogin }) {
   const [form, setForm] = useState({ name: '', email: '', password: '', freelanceNiche: '', country: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
+ useEffect(() => {
+    document.body.classList.add('modal-open');
+    return () => document.body.classList.remove('modal-open');
+  }, []);
   const handleCountryChange = (e) => {
     const selected = e.target.value;
     setForm({ ...form, country: selected });
@@ -51,7 +54,6 @@ export default function RegisterModal({ onClose, switchToLogin }) {
       setLoading(false);
     }
   };
-
   return (
     <div
       style={{

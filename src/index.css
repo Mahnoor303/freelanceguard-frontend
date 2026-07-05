@@ -62,6 +62,7 @@
 
 body {
   @apply font-body bg-bg-primary text-text-primary transition-colors duration-300;
+  overflow-x: hidden;
 }
 
 /* ... rest of your custom CSS (glass, neon-glow, etc.) ... */
@@ -189,4 +190,10 @@ body.modal-open *::after {
   border-color: transparent !important;
   outline-color: transparent !important;
   box-shadow: none !important;
+}
+/* ===== Kill any green line / element that leaks behind modals ===== */
+body.modal-open .cookie-consent,
+body.modal-open .fixed.bottom-6,
+body.modal-open .fixed.bottom-20 {
+  display: none !important;
 }

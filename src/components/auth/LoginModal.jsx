@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';   // ✅ added useEffect
 
 export default function LoginModal({ onClose, switchToRegister }) {
   const { login } = useAuth();
@@ -10,6 +10,12 @@ export default function LoginModal({ onClose, switchToRegister }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // ✅ Add modal-open class to body when modal opens
+  useEffect(() => {
+    document.body.classList.add('modal-open');
+    return () => document.body.classList.remove('modal-open');
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -34,14 +34,15 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
+ useEffect(() => {
+  fetchData();
 
-    const socket = io(SOCKET_URL);
-    socket.on('new-scan', () => fetchData());
-    return () => socket.disconnect();
-  }, []);
-
+  const socket = io(SOCKET_URL, {
+    transports: ['polling'],
+  });
+  socket.on('new-scan', () => fetchData());
+  return () => socket.disconnect();
+}, []);
   if (loading) {
     return <div className="flex items-center justify-center h-64 text-gray-400">Loading dashboard...</div>;
   }
@@ -79,8 +80,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {/* ✅ onboarding class */}
       <h1 className="text-2xl font-heading font-bold dashboard-header">Dashboard</h1>
 
+      {/* Upgrade Success Marquee */}
       {(user?.plan === 'pro' || user?.plan === 'elite') && (
         <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg py-2 overflow-hidden">
           <div className="animate-marquee whitespace-nowrap text-yellow-400 font-medium">
@@ -89,10 +92,12 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* ✅ onboarding class */}
       <div className="upgrade-card">
         <SubscriptionCard />
       </div>
 
+      {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={Shield} value={totalScans} label="Total Scans" color="primary" />
         <StatCard icon={AlertTriangle} value={dangerResults} label="Dangerous Results" color="danger" />
@@ -100,11 +105,13 @@ export default function Dashboard() {
         <StatCard icon={Flag} value={cautionResults} label="Caution" color="warning" />
       </div>
 
+      {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6">
         <PieChartCard data={pieData} />
         <BarChartCard data={last7Days} />
       </div>
 
+      {/* Recent Activity Table */}
       <div className="bg-black border border-gray-800 rounded-xl p-5">
         <h2 className="font-semibold mb-4">Recent Activity</h2>
         {scans.length === 0 ? (
@@ -147,6 +154,7 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* ✅ onboarding class */}
       <div className="text-center scan-button">
         <button
           onClick={() => navigate('/job-analyzer')}

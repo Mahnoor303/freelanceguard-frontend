@@ -24,27 +24,56 @@ export default function FloatingChatButton() {
   }, [messages]);
 
   const handleSend = async () => {
-    const text = input.trim();
-    if (!text || loading) return;
-    setMessages((prev) => [...prev, { role: 'user', content: text }]);
-    setInput('');
-    setLoading(true);
-    try {
-      const data = await api('/chat', {
-        method: 'POST',
-        body: JSON.stringify({ message: text }),
-      });
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply }]);
-    } catch (err) {
-      toast.error(err.message || 'Failed to get response');
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: 'Sorry, I could not process that.' },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const text = input.trim();
+  if (!text || loading) return;
+
+  const userMsg = { role: 'user', content: text };
+  setMessages((prev) => [...prev, userMsg]);
+  setInput('');
+  setLoading(true);
+
+  try {
+    // Try real API first
+    const data = await api('/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message: text }),
+    });
+    setMessages((prev) => [...prev, { role: 'assistant', content: data.reply }]);
+  } catch (err) {
+    console.error('Chat error:', err);
+    // Fallback dummy reply
+    const dummyReply = getDummyReply(text);
+    setMessages((prev) => [...prev, { role: 'assistant', content: dummyReply }]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Smart dummy reply function (add this OUTSIDE the component, at the bottom of the file)
+function getDummyReply(message) {
+  const lower = message.toLowerCase();
+
+  if (lower.includes('scam') || lower.includes('fraud')) {
+    return 'Common freelance scams include: fake job posts asking for upfront payment, clients who disappear after work is delivered, and phishing messages that steal your login credentials. Always use the Job Analyzer and Message Scanner to check for red flags.';
+  }
+  if (lower.includes('payment') || lower.includes('pay')) {
+    return 'Never pay to get a job. Legitimate clients will pay you, not the other way around. Use milestone payments on trusted platforms and check contracts with our Contract Checker.';
+  }
+  if (lower.includes('contract') || lower.includes('agreement')) {
+    return 'Always sign a contract before starting work. Download free templates from our Contract Library and use the Contract Checker to spot dangerous clauses.';
+  }
+  if (lower.includes('profile') || lower.includes('portfolio')) {
+    return 'Build a strong profile by showcasing your best work. Use our Portfolio Builder to create a professional gallery, and keep your skills updated.';
+  }
+  if (lower.includes('rate') || lower.includes('charge') || lower.includes('price')) {
+    return 'Use our Rate Calculator to find out how much you should charge based on your skills and experience. It also gives tips on which skills to improve.';
+  }
+  if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
+    return "Hello! I'm your freelance safety assistant. You can ask me about scams, contracts, payments, or how to use any feature of FreelanceGuard.";
+  }
+
+  return "I'm here to help with freelance safety questions. You can ask about scams, contracts, payments, rates, or how to use FreelanceGuard's tools.";
+}
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {

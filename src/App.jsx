@@ -175,7 +175,7 @@ function AppInner() {
       )}
 
       {/* Floating Tools – only for logged‑in users */}
-      {user && (
+      {!showLogin && !showRegister &&(
         <>
           <FloatingChatButton />
           <FloatingWorkspaceButton />
