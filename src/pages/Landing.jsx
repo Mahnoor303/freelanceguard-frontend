@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Shield, Sun, Moon, UserX, CreditCard, FileWarning } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -15,26 +15,33 @@ import Footer from '../components/layout/Footer';
 import LanguageSwitcher from '../components/ui/LanguageSwitcher';
 import SEO from '../components/ui/SEO';
 import ScrollToTop from '../components/ui/ScrollToTop';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Landing({ dark, setDark, openLogin, openRegister }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showDemo, setShowDemo] = useState(false);
   const { user } = useAuth();
   const { t } = useTranslation();
 
-  // ❌ No local modal state – we use the global openLogin / openRegister directly
+  // Automatically open the login modal if ?login=true is present, then clean the URL
+  useEffect(() => {
+    if (searchParams.get('login') === 'true') {
+      openLogin();
+      window.history.replaceState({}, document.title, '/');
+    }
+  }, [searchParams, openLogin]);
 
   const handleStartScan = () => {
     if (!user) {
-      openLogin();                // 👈 directly calls the global function
+      openLogin();
     } else {
       navigate('/job-analyzer');
     }
   };
 
   return (
-    <div>   {/* removed "relative" to avoid any layout issues */}
+    <div>
       <SEO title="Home" description="Protect your freelance work with AI scam detection." />
       {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-border">
@@ -92,7 +99,6 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
         <div className="absolute w-[300px] h-[120%] bg-gradient-to-r from-transparent via-primary/10 to-transparent rotate-[20deg] -left-96 top-1/2 -translate-y-1/2 animate-sweep" />
         <div className="absolute inset-0 bg-black z-10 animate-revealUp" />
         <div className="relative z-20 flex flex-col items-center text-center px-6">
-          {/* ❌ HeroTag line completely removed */}
           <h1 className="text-[clamp(60px,9vw,130px)] leading-[0.9] font-extrabold text-white opacity-0 animate-fadeIn delay-300">
             {t('stopGuessing')}<br />
             <span className="text-primary">{t('startProtecting')}</span>
@@ -145,7 +151,7 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
       <FinalCTA />
       <Footer />
 
-      {/* Demo Video Modal (local, fine) */}
+      {/* Demo Video Modal */}
       {showDemo && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="relative bg-black border border-gray-800 rounded-2xl overflow-hidden max-w-4xl w-full">
@@ -158,8 +164,6 @@ export default function Landing({ dark, setDark, openLogin, openRegister }) {
           </div>
         </div>
       )}
-
-      {/* ❌ Login/Register modals now handled globally in App.jsx – removed from here */}
 
       <ScrollToTop />
     </div>

@@ -30,7 +30,7 @@ export default function Sidebar() {
   const { user } = useAuth();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30 sidebar">
+    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30 sidebar" data-onboarding="sidebar">
       {/* User name / brand */}
       <div className="p-6 font-heading font-bold text-2xl text-primary">
         {user?.name || 'FreelanceGuard'}

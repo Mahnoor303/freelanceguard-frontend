@@ -81,7 +81,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* ✅ onboarding class */}
-      <h1 className="text-2xl font-heading font-bold dashboard-header">Dashboard</h1>
+      <h1 className="text-2xl font-heading font-bold dashboard-header"data-onboarding="dashboard-header">Dashboard</h1>
 
       {/* Upgrade Success Marquee */}
       {(user?.plan === 'pro' || user?.plan === 'elite') && (
@@ -93,7 +93,7 @@ export default function Dashboard() {
       )}
 
       {/* ✅ onboarding class */}
-      <div className="upgrade-card">
+      <div className="upgrade-card" data-onboarding="upgrade-card">
         <SubscriptionCard />
       </div>
 
@@ -155,7 +155,8 @@ export default function Dashboard() {
       </div>
 
       {/* ✅ onboarding class */}
-      <div className="text-center scan-button">
+      <div className="text-center scan-button" data-onboarding="scan-button">
+        
         <button
           onClick={() => navigate('/job-analyzer')}
           className="bg-primary text-black px-6 py-3 rounded-full font-bold"
