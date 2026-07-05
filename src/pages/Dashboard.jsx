@@ -7,9 +7,9 @@ import PieChartCard from '../components/charts/PieChartCard';
 import BarChartCard from '../components/charts/BarChartCard';
 import SubscriptionCard from '../components/ui/SubscriptionCard';
 import { api } from '../api';
-// import { io } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-// const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://freelanceguard.alwaysdata.net';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -34,13 +34,13 @@ export default function Dashboard() {
     }
   };
 
-  // useEffect(() => {
-  //   fetchData();
+  useEffect(() => {
+    fetchData();
 
-  //   const socket = io(SOCKET_URL);
-  //   socket.on('new-scan', () => fetchData());
-  //   return () => socket.disconnect();
-  // }, []);
+    const socket = io(SOCKET_URL);
+    socket.on('new-scan', () => fetchData());
+    return () => socket.disconnect();
+  }, []);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64 text-gray-400">Loading dashboard...</div>;
