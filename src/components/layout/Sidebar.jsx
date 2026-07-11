@@ -7,21 +7,31 @@ import {
 import { useAuth } from '../../context/AuthContext';
 
 // Static links – NO Contract Checker, Client Lookup, or Subscription here
+// Sidebar.jsx mein links array ko is se replace karein
 const links = [
+  // === CORE PROTECTION (Most important) ===
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/job-analyzer', icon: Shield, label: 'Job Analyzer' },
   { to: '/message-scanner', icon: MessageSquare, label: 'Message Scanner' },
+
+  // === HISTORY & COMMUNITY ===
   { to: '/history', icon: History, label: 'History' },
-  { to: '/portfolio-builder', icon: FolderKanban, label: 'Portfolio' },
   { to: '/saved-reports', icon: Bookmark, label: 'Saved Reports' },
-  { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
-  { to: '/video-tutorials', icon: Video, label: 'Tutorials' },
-  { to: '/contract-templates', icon: ScrollText, label: 'Templates' },
-  { to: '/workspace', icon: BookOpen, label: 'Workspace' },
-  { to: '/roadmap', icon: Map, label: 'Roadmap' },
   { to: '/demo-scans', icon: BookOpen, label: 'Demo Scans' },
   { to: '/reports', icon: Flag, label: 'Community' },
+
+  // === PRODUCTIVITY TOOLS ===
+  { to: '/portfolio-builder', icon: FolderKanban, label: 'Portfolio' },
+  { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
   { to: '/rate-calculator', icon: Calculator, label: 'Rate Calc' },
+  { to: '/workspace', icon: BookOpen, label: 'Workspace' },
+
+  // === LEARNING & RESOURCES ===
+  { to: '/video-tutorials', icon: Video, label: 'Tutorials' },
+  { to: '/contract-templates', icon: ScrollText, label: 'Templates' },
+  { to: '/roadmap', icon: Map, label: 'Roadmap' },
+
+  // === ACCOUNT ===
   { to: '/profile', icon: Users, label: 'Profile' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];

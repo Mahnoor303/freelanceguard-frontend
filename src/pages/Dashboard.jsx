@@ -87,7 +87,7 @@ export default function Dashboard() {
       {(user?.plan === 'pro' || user?.plan === 'elite') && (
         <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg py-2 overflow-hidden">
           <div className="whitespace-nowrap text-yellow-400 font-medium">
-            ⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.
+            ⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.
           </div>
         </div>
       )}
