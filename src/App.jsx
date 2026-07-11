@@ -102,6 +102,7 @@ function AppInner() {
 
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary transition-colors duration-300">
+      <CookieBanner />
       <OnboardingTour />
       <Routes>
         {/* Public */}
@@ -220,7 +221,6 @@ export default function App() {
     <HelmetProvider>
       <AuthProvider>
         <ErrorBoundary>
-          <CookieBanner />
           <div ref={loaderRef} className={appReady ? 'pointer-events-none' : ''}>
             <Loader />
           </div>

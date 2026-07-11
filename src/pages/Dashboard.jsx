@@ -34,15 +34,15 @@ export default function Dashboard() {
     }
   };
 
- useEffect(() => {
-  fetchData();
+  useEffect(() => {
+    fetchData();
 
-  const socket = io(SOCKET_URL, {
-    transports: ['polling'],
-  });
-  socket.on('new-scan', () => fetchData());
-  return () => socket.disconnect();
-}, []);
+    const socket = io(SOCKET_URL, {
+      transports: ['polling'],
+    });
+    socket.on('new-scan', () => fetchData());
+    return () => socket.disconnect();
+  }, []);
   if (loading) {
     return <div className="flex items-center justify-center h-64 text-gray-400">Loading dashboard...</div>;
   }
@@ -81,12 +81,12 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* ✅ onboarding class */}
-      <h1 className="text-2xl font-heading font-bold dashboard-header"data-onboarding="dashboard-header">Dashboard</h1>
+      <h1 className="text-2xl font-heading font-bold dashboard-header" data-onboarding="dashboard-header">Dashboard</h1>
 
       {/* Upgrade Success Marquee */}
       {(user?.plan === 'pro' || user?.plan === 'elite') && (
         <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg py-2 overflow-hidden">
-          <div className="animate-marquee whitespace-nowrap text-yellow-400 font-medium">
+          <div className="whitespace-nowrap text-yellow-400 font-medium">
             ⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.
           </div>
         </div>
@@ -136,13 +136,12 @@ export default function Dashboard() {
                   </td>
                   <td className="py-2">
                     <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                        scan.riskLevel === 'danger'
+                      className={`px-2 py-0.5 rounded-full text-xs font-semibold ${scan.riskLevel === 'danger'
                           ? 'bg-red-900/30 text-red-400'
                           : scan.riskLevel === 'caution'
-                          ? 'bg-yellow-900/30 text-yellow-400'
-                          : 'bg-green-900/30 text-green-400'
-                      }`}
+                            ? 'bg-yellow-900/30 text-yellow-400'
+                            : 'bg-green-900/30 text-green-400'
+                        }`}
                     >
                       {scan.riskLevel}
                     </span>
@@ -156,7 +155,7 @@ export default function Dashboard() {
 
       {/* ✅ onboarding class */}
       <div className="text-center scan-button" data-onboarding="scan-button">
-        
+
         <button
           onClick={() => navigate('/job-analyzer')}
           className="bg-primary text-black px-6 py-3 rounded-full font-bold"

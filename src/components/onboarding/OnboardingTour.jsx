@@ -82,7 +82,7 @@ export default function OnboardingTour() {
     }
 
     if (FORCE_TEST_MODE) {
-      const t = setTimeout(() => setVisible(true), 1000);
+      const t = setTimeout(() => setVisible(true), 2000);
       return () => clearTimeout(t);
     }
 

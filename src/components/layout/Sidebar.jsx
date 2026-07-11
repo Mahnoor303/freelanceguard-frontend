@@ -26,6 +26,7 @@ const links = [
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
+
 export default function Sidebar() {
   const { user } = useAuth();
 
