@@ -20,7 +20,7 @@ export default function JobMatcher() {
     setLoading(true);
     setError(null);
     try {
-const data = await api(`/jobs/search?skill=${encodeURIComponent(skill)}&country=PK`);
+const data = await api(`/jobs/search?skill=${encodeURIComponent(skill)}&location=Pakistan`);
       setJobs(data);
     } catch (err) {
       setError('Failed to fetch jobs. Please try again.');
