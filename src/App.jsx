@@ -12,7 +12,7 @@ import { HelmetProvider } from 'react-helmet-async';
 // ---------- Floating Tools ----------
 import FloatingChatButton from './components/ui/FloatingChatButton';
 import FloatingWorkspaceButton from './components/ui/FloatingWorkspaceButton';
-import OnboardingTour from './components/onboarding/OnboardingTour';
+// import OnboardingTour from './components/onboarding/OnboardingTour';
 
 // ---------- Layouts ----------
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -103,7 +103,7 @@ function AppInner() {
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary transition-colors duration-300">
       <CookieBanner />
-      <OnboardingTour />
+      {/* <OnboardingTour /> */}
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing dark={dark} setDark={setDark} openLogin={openLogin} openRegister={openRegister} />} />

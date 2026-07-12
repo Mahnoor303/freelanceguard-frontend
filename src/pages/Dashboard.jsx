@@ -86,8 +86,15 @@ export default function Dashboard() {
       {/* Upgrade Success Marquee */}
       {(user?.plan === 'pro' || user?.plan === 'elite') && (
         <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg py-2 overflow-hidden">
-          <div className="whitespace-nowrap text-yellow-400 font-medium">
-            ⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield.
+          <div className="animate-marquee">
+            <span className="text-yellow-400 font-medium mx-4">
+              ⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
+              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
+              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
+              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
+              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
+              Unlimited scans, contract analysis, and priority AI support unlocked.
+            </span>
           </div>
         </div>
       )}
@@ -137,10 +144,10 @@ export default function Dashboard() {
                   <td className="py-2">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold ${scan.riskLevel === 'danger'
-                          ? 'bg-red-900/30 text-red-400'
-                          : scan.riskLevel === 'caution'
-                            ? 'bg-yellow-900/30 text-yellow-400'
-                            : 'bg-green-900/30 text-green-400'
+                        ? 'bg-red-900/30 text-red-400'
+                        : scan.riskLevel === 'caution'
+                          ? 'bg-yellow-900/30 text-yellow-400'
+                          : 'bg-green-900/30 text-green-400'
                         }`}
                     >
                       {scan.riskLevel}
