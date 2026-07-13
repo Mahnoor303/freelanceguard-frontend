@@ -2,44 +2,52 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Shield, MessageSquare, FileText, Search,
   History, Users, Settings, Bookmark, Flag, Home, ShieldCheck,
-  BookOpen,  Video, ScrollText, Map, Calculator, FolderKanban, Briefcase
+  BookOpen,  Video, ScrollText, Map, Calculator, FolderKanban, Briefcase // 👈 add this
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
+// Static links – NO Contract Checker, Client Lookup, or Subscription here
+// Sidebar.jsx mein links array ko is se replace karein
 const links = [
-  // 1. Rate Calculator (pehle rate set karein)
-  { to: '/rate-calculator', icon: Calculator, label: 'Rate Calc' },
-  // 2. Job Matcher (jobs dekhein)
+  // === CORE PROTECTION (Most important) ===
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
+    { to: '/rate-calculator', icon: Calculator, label: 'Rate Calc' },
   { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
-  // 3. Core Scanners
   { to: '/job-analyzer', icon: Shield, label: 'Job Analyzer' },
   { to: '/message-scanner', icon: MessageSquare, label: 'Message Scanner' },
-  // 4. History & Reports
+
+  // === HISTORY & COMMUNITY ===
   { to: '/history', icon: History, label: 'History' },
   { to: '/saved-reports', icon: Bookmark, label: 'Saved Reports' },
-  // 5. Community
+  { to: '/demo-scans', icon: BookOpen, label: 'Demo Scans' },
   { to: '/reports', icon: Flag, label: 'Community' },
-  // 6. Productivity Tools
+
+  // === PRODUCTIVITY TOOLS ===
   { to: '/portfolio-builder', icon: FolderKanban, label: 'Portfolio' },
   { to: '/workspace', icon: BookOpen, label: 'Workspace' },
-  // 7. Learning
+
+  // === LEARNING & RESOURCES ===
   { to: '/video-tutorials', icon: Video, label: 'Tutorials' },
   { to: '/contract-templates', icon: ScrollText, label: 'Templates' },
   { to: '/roadmap', icon: Map, label: 'Roadmap' },
-  // 8. Dashboard (overview)
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
-  // 9. Account
+
+  // === ACCOUNT ===
   { to: '/profile', icon: Users, label: 'Profile' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
+
 export default function Sidebar() {
   const { user } = useAuth();
+
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30 sidebar">
+    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30 sidebar" data-onboarding="sidebar">
+      {/* User name / brand */}
       <div className="p-6 font-heading font-bold text-2xl text-primary">
         {user?.name || 'FreelanceGuard'}
       </div>
+
+      {/* Back to Site */}
       <NavLink
         to="/"
         className="flex items-center gap-3 px-3 py-2 mx-3 rounded-lg text-sm text-gray-400 hover:bg-white/5 hover:text-white transition mb-2"
@@ -67,7 +75,7 @@ export default function Sidebar() {
           </NavLink>
         ))}
 
-        {/* Premium links */}
+        {/* Premium links – only for pro/elite users */}
         {(user?.plan === 'pro' || user?.plan === 'elite') && (
           <>
             <NavLink
