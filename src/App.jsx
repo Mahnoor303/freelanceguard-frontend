@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import useDarkMode from './hooks/useDarkMode';
 import Loader from './components/ui/Loader';
+import { Toaster } from 'react-hot-toast';
 import gsap from 'gsap';
 import CookieBanner from './components/ui/CookieBanner';
 import PremiumFeatureGuard from './components/ui/PremiumFeatureGuard';
@@ -219,6 +220,7 @@ export default function App() {
 
   return (
     <HelmetProvider>
+        <Toaster position="top-right" reverseOrder={false} />
       <AuthProvider>
         <ErrorBoundary>
           <div ref={loaderRef} className={appReady ? 'pointer-events-none' : ''}>

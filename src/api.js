@@ -16,12 +16,10 @@ export const api = async (endpoint, options = {}) => {
   if (!res.ok) {
     let errorMessage = 'Request failed';
     try {
-      // Clone the response so we can read it twice if needed (just in case)
       const cloned = res.clone();
       const errorData = await cloned.json();
       errorMessage = errorData.message || errorMessage;
     } catch {
-      // If JSON parsing fails, read as plain text
       try {
         errorMessage = await res.text();
       } catch {}
