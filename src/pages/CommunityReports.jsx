@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../api';
 import {
-  Search, ThumbsUp, Plus, X, Trash2, Shield, User, ExternalLink, Calendar, Flag, Upload
+  Search, ThumbsUp, Plus, X, Trash2, Shield, User, ExternalLink, Calendar, Flag
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -22,9 +22,6 @@ export default function CommunityReports() {
     reason: '',
     evidence: '',
   });
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,59 +39,6 @@ export default function CommunityReports() {
   useEffect(() => {
     fetchReports();
   }, []);
-
-  // Drag & drop handlers
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type.startsWith('image/')) {
-      setFile(droppedFile);
-      setPreview(URL.createObjectURL(droppedFile));
-    } else {
-      toast.error('Only image files allowed');
-    }
-  }, []);
-
-  const handleFileSelect = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.type.startsWith('image/')) {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
-    }
-  };
-
-  const uploadFile = async () => {
-    if (!file) return null;
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('evidence', file);
-      const res = await fetch('https://freelanceguard.alwaysdata.net/api/upload', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || 'Upload failed');
-      }
-      const data = await res.json();
-      return data.url;
-    } catch (err) {
-      toast.error(err.message);
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleUpvote = async (id, e) => {
     e.stopPropagation();
@@ -115,7 +59,6 @@ export default function CommunityReports() {
     e.stopPropagation();
     if (!confirm('Delete this report?')) return;
     try {
-      // Ab owner/admin dono delete kar sakte hain
       await api(`/community/${id}`, { method: 'DELETE' });
       setReports((prev) => prev.filter((r) => r._id !== id));
       toast.success('Report deleted');
@@ -141,16 +84,9 @@ export default function CommunityReports() {
     }
 
     try {
-      let evidenceUrl = form.evidence;
-      if (file) {
-        const uploadedUrl = await uploadFile();
-        if (uploadedUrl) evidenceUrl = uploadedUrl;
-        else return;   // upload fail -> stop
-      }
-
       await api('/community', {
         method: 'POST',
-        body: JSON.stringify({ ...form, evidence: evidenceUrl }),
+        body: JSON.stringify(form),
       });
       toast.success('Report submitted!');
       setShowForm(false);
@@ -162,8 +98,6 @@ export default function CommunityReports() {
         reason: '',
         evidence: '',
       });
-      setFile(null);
-      setPreview(null);
       fetchReports();
     } catch (err) {
       toast.error(err.message);
@@ -182,17 +116,28 @@ export default function CommunityReports() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-heading font-bold text-text-primary">Community Reports</h1>
-
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-2.5 text-text-secondary" size={18} />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search platform, company, reason..."
-          className="pl-10 pr-4 py-2.5 rounded-xl bg-card-bg border border-border text-text-primary w-full placeholder:text-text-secondary focus:outline-none focus:border-primary"
-        />
+      {/* Header with Search + Submit Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-2xl font-heading font-bold text-text-primary">Community Reports</h1>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-3 top-2.5 text-text-secondary" size={18} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="pl-10 pr-4 py-2.5 rounded-xl bg-card-bg border border-border text-text-primary w-full placeholder:text-text-secondary focus:outline-none focus:border-primary"
+            />
+          </div>
+          {user && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-primary text-black px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-primary-dark transition shrink-0"
+            >
+              <Plus size={18} /> Submit Report
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Reports Grid */}
@@ -233,7 +178,6 @@ export default function CommunityReports() {
                       </span>
                     </div>
                   </div>
-                  {/* Delete button visible only if owner or admin */}
                   {(user?._id === report.userId?._id || user?.role === 'admin') && (
                     <button
                       onClick={(e) => handleDelete(report._id, e)}
@@ -296,16 +240,6 @@ export default function CommunityReports() {
             </div>
           ))}
         </div>
-      )}
-
-      {/* Floating Add Button */}
-      {user && (
-        <button
-          onClick={() => setShowForm(true)}
-          className="fixed bottom-8 right-8 bg-primary text-black w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition z-40"
-        >
-          <Plus size={28} />
-        </button>
       )}
 
       {/* Submit Modal */}
@@ -392,53 +326,23 @@ export default function CommunityReports() {
                 />
               </div>
 
-              {/* Evidence – Drag & Drop */}
+              {/* Evidence URL */}
               <div>
-                <label className="text-sm text-text-secondary mb-1 block">Evidence (Screenshot)</label>
-                <div
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                  className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition ${
-                    preview ? 'border-primary/50 bg-primary/5' : 'border-border hover:border-primary/30'
-                  }`}
-                  onClick={() => document.getElementById('evidence-file').click()}
-                >
-                  <input
-                    id="evidence-file"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileSelect}
-                  />
-                  {preview ? (
-                    <div className="space-y-2">
-                      <img src={preview} alt="Preview" className="max-h-32 mx-auto rounded-lg" />
-                      <p className="text-xs text-text-secondary">Click or drop to change image</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Upload className="mx-auto text-text-secondary" size={32} />
-                      <p className="text-sm text-text-secondary">Drag & drop a screenshot, or click to browse</p>
-                      <p className="text-xs text-text-secondary">Only image files (jpg, png, gif)</p>
-                    </div>
-                  )}
-                </div>
-                {file && <p className="text-xs text-text-secondary mt-1">{file.name}</p>}
+                <label className="text-sm text-text-secondary mb-1 block">Evidence (Screenshot URL)</label>
+                <input
+                  type="url"
+                  placeholder="https://imgur.com/..."
+                  className="w-full p-3 rounded-xl bg-bg-secondary border border-border text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-primary"
+                  value={form.evidence}
+                  onChange={(e) => setForm({ ...form, evidence: e.target.value })}
+                />
               </div>
 
               <button
                 type="submit"
-                disabled={uploading}
-                className="w-full bg-primary text-black py-3 rounded-xl font-semibold hover:bg-primary-dark transition disabled:opacity-70 flex items-center justify-center gap-2"
+                className="w-full bg-primary text-black py-3 rounded-xl font-semibold hover:bg-primary-dark transition"
               >
-                {uploading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                    Uploading...
-                  </>
-                ) : (
-                  'Submit Report'
-                )}
+                Submit Report
               </button>
             </form>
           </div>
