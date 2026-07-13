@@ -2,10 +2,17 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>FreelanceGuard</title>
+  <title>Redirecting...</title>
   <script>
-    sessionStorage.redirect = location.href;
-    location.replace("/freelanceguard-frontend/index.html");
+    // If the URL doesn't contain the basename, redirect to it
+    (function() {
+      var base = '/freelanceguard-frontend';
+      if (location.pathname.indexOf(base) !== 0) {
+        // Preserve any query string and hash
+        var newPath = base + location.pathname + location.search + location.hash;
+        window.location.replace(newPath);
+      }
+    })();
   </script>
 </head>
 <body></body>

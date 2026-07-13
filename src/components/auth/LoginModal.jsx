@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';   // ✅ added useEffect
+import { useState, useEffect } from 'react';
 
 export default function LoginModal({ onClose, switchToRegister }) {
   const { login } = useAuth();
@@ -11,7 +11,6 @@ export default function LoginModal({ onClose, switchToRegister }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // ✅ Add modal-open class to body when modal opens
   useEffect(() => {
     document.body.classList.add('modal-open');
     return () => document.body.classList.remove('modal-open');
@@ -32,6 +31,12 @@ export default function LoginModal({ onClose, switchToRegister }) {
     }
   };
 
+  // Admin login handler – closes modal then navigates
+  const goToAdminLogin = () => {
+    onClose();
+    navigate('/admin/login');
+  };
+
   return (
     <div
       style={{
@@ -40,21 +45,21 @@ export default function LoginModal({ onClose, switchToRegister }) {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(0,0,0,0.9)',   // solid dark overlay, no transparency
+        backgroundColor: 'rgba(0,0,0,0.9)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 99999,
-        border: 'none',            // ✅ NO border
-        outline: 'none',           // ✅ NO outline
-        boxShadow: 'none',         // ✅ NO shadow
+        border: 'none',
+        outline: 'none',
+        boxShadow: 'none',
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           background: '#0a0a0a',
-          border: '1px solid #333',    // neutral gray border, not green
+          border: '1px solid #333',
           borderRadius: '16px',
           padding: '30px',
           width: '100%',
@@ -121,7 +126,7 @@ export default function LoginModal({ onClose, switchToRegister }) {
             disabled={loading}
             style={{
               padding: '14px',
-              background: '#1DB954',      // dark green (your new primary)
+              background: '#1DB954',
               color: '#000',
               fontWeight: 'bold',
               border: 'none',
@@ -143,6 +148,25 @@ export default function LoginModal({ onClose, switchToRegister }) {
             Register
           </button>
         </p>
+
+        {/* Login as Admin – uses navigate to respect basename */}
+        <div style={{ textAlign: 'center', marginTop: '10px' }}>
+          <button
+            onClick={goToAdminLogin}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#aaa',
+              fontSize: '13px',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+            onMouseEnter={(e) => (e.target.style.color = '#1DB954')}
+            onMouseLeave={(e) => (e.target.style.color = '#aaa')}
+          >
+            Login as Admin
+          </button>
+        </div>
       </div>
     </div>
   );

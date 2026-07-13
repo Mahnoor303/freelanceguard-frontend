@@ -4,12 +4,18 @@ import { BrowserRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import App from './App.jsx';
-import './index.css';   // 👈 THIS IS THE MISSING IMPORT
+import './index.css';
+
+// ===== Redirect if URL doesn't start with basename =====
+const basename = '/freelanceguard-frontend';
+if (!window.location.pathname.startsWith(basename)) {
+  window.location.replace(basename + window.location.pathname + window.location.search + window.location.hash);
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <I18nextProvider i18n={i18n}>
-      <BrowserRouter basename="/freelanceguard-frontend">   {/* no basename for local dev */}
+      <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </I18nextProvider>
