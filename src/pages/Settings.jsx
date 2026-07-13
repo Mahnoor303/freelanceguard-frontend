@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Bell, Moon, Globe, Lock, ShieldCheck, Trash2, User, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api';
 import toast from 'react-hot-toast';
 import i18n from '../i18n';
+import { useNavigate } from 'react-router-dom';
 
 export default function Settings({ dark, setDark }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   // ---------- Notification Prefs ----------
   const [notifEmail, setNotifEmail] = useState(true);
@@ -50,9 +52,18 @@ export default function Settings({ dark, setDark }) {
     toast.success(`Language changed to ${lang === 'en' ? 'English' : lang === 'ur' ? 'Urdu' : lang === 'it' ? 'Italiano' : lang === 'tr' ? 'Türkçe' : lang === 'ar' ? 'العربية' : 'Русский'}`);
   };
 
-  const handleDeleteAccount = () => {
-    toast.error('Account deletion is not available in demo.');
-    setShowDeleteConfirm(false);
+  const handleDeleteAccount = async () => {
+    try {
+      await api('/auth/me', { method: 'DELETE' });
+      toast.success('Account deleted successfully');
+      logout();
+      localStorage.clear();
+      navigate('/');
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setShowDeleteConfirm(false);
+    }
   };
 
   return (

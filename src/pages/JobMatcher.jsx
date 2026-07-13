@@ -10,11 +10,17 @@ export default function JobMatcher() {
 
   // Load skills saved from the Rate Calculator
   useEffect(() => {
-    const savedSkills = localStorage.getItem('selectedSkills');
-    if (savedSkills) {
-      setSkills(JSON.parse(savedSkills));
+  const savedSkills = localStorage.getItem('selectedSkills');
+  if (savedSkills) {
+    const parsed = JSON.parse(savedSkills);
+    setSkills(parsed);
+    // Auto-fetch jobs for the first skill (or all skills)
+    if (parsed.length > 0) {
+      searchJobs(parsed[0]);  // auto-fetch for first skill
+      // To fetch for ALL skills, you could loop, but one is fine initially
     }
-  }, []);
+  }
+}, []);
 
   const searchJobs = async (skill) => {
     setLoading(true);
