@@ -52,9 +52,12 @@ export default function Settings({ dark, setDark }) {
     toast.success(`Language changed to ${lang === 'en' ? 'English' : lang === 'ur' ? 'Urdu' : lang === 'it' ? 'Italiano' : lang === 'tr' ? 'Türkçe' : lang === 'ar' ? 'العربية' : 'Русский'}`);
   };
 
- const handleDeleteAccount = async () => {
+const handleDeleteAccount = async () => {
   try {
-    await api('/auth/delete-account', { method: 'POST' });   // was DELETE, now POST
+    const token = localStorage.getItem('token');
+    await fetch(`https://freelanceguard.alwaysdata.net/api/auth/delete-account?token=${token}`, {
+      method: 'GET',
+    });
     toast.success('Account deleted successfully');
     logout();
     localStorage.clear();
