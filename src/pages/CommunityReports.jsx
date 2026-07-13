@@ -138,10 +138,10 @@ export default function CommunityReports() {
       toast.error('Reason / Description is required');
       return;
     }
-    if (!file && !form.evidence.trim()) {
-      toast.error('Please provide evidence (screenshot)');
-      return;
-    }
+    // if (!file && !form.evidence.trim()) {
+    //   toast.error('Please provide evidence (screenshot)');
+    //   return;
+    // }
 
     try {
       let evidenceUrl = form.evidence;
