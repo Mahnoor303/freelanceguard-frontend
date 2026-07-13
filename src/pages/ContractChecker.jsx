@@ -13,6 +13,15 @@ export default function ContractChecker() {
   const [result, setResult] = useState(null);
   const [activeClause, setActiveClause] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+
+  const ALLOWED_EXTENSIONS = ['.txt', '.md', '.json', '.xml'];
+
+  const isValidTextFile = (file) => {
+    if (file.type === 'text/html') return false;
+    const name = file.name.toLowerCase();
+    return ALLOWED_EXTENSIONS.some(ext => name.endsWith(ext));
+  };
 
   const runScan = async (text) => {
     if (!text || text.trim().length < 5) {
@@ -47,6 +56,44 @@ export default function ContractChecker() {
     }
   }, []);
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragOver(false);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    if (!isValidTextFile(file)) {
+      toast.error('Only text files (.txt, .md, .json, .xml) are allowed. HTML files are not supported.');
+      return;
+    }
+
+    try {
+      const text = await readFileAsText(file);
+      setInput(text);
+      toast.success(`File "${file.name}" loaded`);
+    } catch (err) {
+      toast.error('Could not read file');
+    }
+  };
+
+  const readFileAsText = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject();
+      reader.readAsText(file);
+    });
+  };
+
   const handleAnalyze = () => runScan(input);
 
   const handleSave = async () => {
@@ -74,10 +121,19 @@ export default function ContractChecker() {
 
       {step === 'input' && (
         <>
-          <div className="border-2 border-dashed border-gray-700 rounded-xl p-10 text-center mb-4">
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-xl p-10 text-center mb-4 transition-colors ${
+              dragOver ? 'border-primary bg-primary/5' : 'border-gray-700'
+            }`}
+          >
             <Upload size={40} className="mx-auto text-gray-400" />
-            <p className="mt-2 text-gray-500">Drop PDF (or paste text below)</p>
+            <p className="mt-2 text-gray-500">Drop a text file (.txt, .md) or paste below</p>
+            <p className="text-xs text-gray-600 mt-1">HTML and other formats are not supported</p>
           </div>
+
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -112,6 +168,18 @@ export default function ContractChecker() {
             }`}>
               {result.riskLevel.toUpperCase()}
             </p>
+            <p className="text-sm text-text-secondary text-center mt-2 max-w-md">
+              {result.riskLevel === 'safe'
+                ? 'This contract looks fair! Minor notes below.'
+                : result.riskLevel === 'caution'
+                ? 'Some caution – check the clauses below.'
+                : 'High risk – review the red flags carefully.'}
+            </p>
+            {result.redFlags?.length > 0 && (
+              <p className="text-xs text-text-secondary mt-1">
+                These issues contributed to the risk score.
+              </p>
+            )}
           </div>
 
           <GlassCard>

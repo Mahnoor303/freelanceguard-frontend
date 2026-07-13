@@ -1,22 +1,26 @@
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-export default function RiskMeter({ score }) {
-  const color = score > 70 ? '#EF4444' : score > 40 ? '#F59E0B' : '#10B981';
+export default function RiskMeter({ score = 0 }) {
+  const risk = Math.min(100, Math.max(0, score));
+  const color =
+    risk <= 20 ? '#10B981'      // low risk → green
+    : risk <= 70 ? '#F59E0B'   // moderate → yellow
+    : '#EF4444';               // high risk → red
 
   return (
-    <div className="w-48 h-48 mx-auto">
+    <div className="flex flex-col items-center justify-center w-32 h-32">
       <CircularProgressbar
-        value={score}
-        text={`${score}%`}
+        value={risk}
+        text={`${risk}%`}
         styles={buildStyles({
-          textSize: '16px',
+          textSize: '22px',
           pathColor: color,
           textColor: color,
-          trailColor: '#E2E8F0',
-          backgroundColor: '#3e98c7',
+          trailColor: '#1E293B',
         })}
       />
+      <span className="text-xs text-text-secondary mt-1">Risk Score</span>
     </div>
   );
 }

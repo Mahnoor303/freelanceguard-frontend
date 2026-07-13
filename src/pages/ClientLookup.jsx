@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Search, Globe, Building2, Calendar, AlertTriangle, Save, CheckCircle } from 'lucide-react';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { Search, AlertTriangle, Save, CheckCircle } from 'lucide-react';
+import RiskMeter from '../components/ui/RiskMeter';
 import { api } from '../api';
 import toast from 'react-hot-toast';
 import ScanPDF from '../components/ScanPDF';
@@ -43,7 +42,22 @@ export default function ClientLookup() {
     }
   }, []);
 
-  const handleSearch = () => runScan(input);
+  const handleSearch = () => {
+    const text = input.trim();
+    if (text.length < 2) {
+      toast.error('Input is too short');
+      return;
+    }
+    if (text.length > 100) {
+      toast.error('Please enter a company name, email, or domain (max 100 characters)');
+      return;
+    }
+    if (!/[a-zA-Z]/.test(text)) {
+      toast.error('Please enter a valid company name, email, or domain');
+      return;
+    }
+    runScan(text);
+  };
 
   const handleSave = async () => {
     if (!result) return;
@@ -57,9 +71,6 @@ export default function ClientLookup() {
       toast.error(err.message);
     }
   };
-
-  const trustScore = result?.riskScore || 0;
-  const riskLevel = result?.riskLevel || 'caution';
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -83,22 +94,26 @@ export default function ClientLookup() {
 
       {searched && result && (
         <div className="glass rounded-xl p-8 text-center animate-fadeIn">
-          <div className="w-32 mx-auto mb-4">
-            <CircularProgressbar
-              value={trustScore}
-              text={`${trustScore}%`}
-              styles={buildStyles({
-                textSize: '20px',
-                pathColor: trustScore > 70 ? '#10B981' : trustScore > 40 ? '#F59E0B' : '#EF4444',
-                textColor: trustScore > 70 ? '#10B981' : trustScore > 40 ? '#F59E0B' : '#EF4444',
-                trailColor: '#1E293B',
-              })}
-            />
+          <div className="flex flex-col items-center">
+            <RiskMeter score={result.riskScore} />
+            <p className={`mt-2 text-lg font-semibold ${
+              result.riskLevel === 'safe' ? 'text-green-400' : result.riskLevel === 'danger' ? 'text-red-400' : 'text-yellow-400'
+            }`}>
+              {result.riskLevel.toUpperCase()}
+            </p>
+            <p className="text-sm text-text-secondary text-center mt-2 max-w-md">
+              {result.riskLevel === 'safe'
+                ? 'This client appears trustworthy. Minor notes below.'
+                : result.riskLevel === 'caution'
+                ? 'Some caution – check the flags below.'
+                : 'High risk – review the red flags carefully.'}
+            </p>
+            {result.redFlags?.length > 0 && (
+              <p className="text-xs text-text-secondary mt-1">
+                These issues contributed to the risk score.
+              </p>
+            )}
           </div>
-          <h2 className="text-xl font-heading font-semibold">Trust Score</h2>
-          <p className={`text-sm mt-1 ${riskLevel === 'safe' ? 'text-green-400' : riskLevel === 'danger' ? 'text-red-400' : 'text-yellow-400'}`}>
-            {riskLevel.toUpperCase()}
-          </p>
 
           <div className="grid grid-cols-2 gap-4 mt-6 text-left">
             {result.safeSigns?.map((s, i) => (

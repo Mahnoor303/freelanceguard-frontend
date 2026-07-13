@@ -101,6 +101,18 @@ export default function MessageScanner() {
             }`}>
               {result.riskLevel.toUpperCase()}
             </p>
+            <p className="text-sm text-text-secondary text-center mt-2 max-w-md">
+              {result.riskLevel === 'safe'
+                ? 'This message looks genuine! Minor notes below.'
+                : result.riskLevel === 'caution'
+                ? 'Some caution needed – check the flags below.'
+                : 'High risk – review the red flags carefully.'}
+            </p>
+            {result.redFlags?.length > 0 && (
+              <p className="text-xs text-text-secondary mt-1">
+                These issues contributed to the risk score.
+              </p>
+            )}
           </div>
 
           {result.redFlags?.length > 0 && (

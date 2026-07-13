@@ -13,7 +13,6 @@ export default function JobAnalyzer() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Reusable scan function – used by both the button and demo
   const runScan = async (text) => {
     if (!text || text.trim().length < 5) {
       toast.error('Input text is too short');
@@ -36,7 +35,6 @@ export default function JobAnalyzer() {
     }
   };
 
-  // Check for demo text on mount
   useEffect(() => {
     const demoText = sessionStorage.getItem('demoScanText');
     const demoType = sessionStorage.getItem('demoScanType');
@@ -96,7 +94,26 @@ export default function JobAnalyzer() {
 
       {step === 'result' && result && (
         <div className="space-y-6">
-          <RiskMeter score={result.riskScore} />
+          <div className="flex flex-col items-center">
+            <RiskMeter score={result.riskScore} />
+            <p className={`mt-2 text-lg font-semibold ${
+              result.riskLevel === 'danger' ? 'text-red-400' : result.riskLevel === 'caution' ? 'text-yellow-400' : 'text-green-400'
+            }`}>
+              {result.riskLevel.toUpperCase()}
+            </p>
+            <p className="text-sm text-text-secondary text-center mt-2 max-w-md">
+              {result.riskLevel === 'safe'
+                ? 'This job looks trustworthy! A few minor notes below.'
+                : result.riskLevel === 'caution'
+                ? 'Some caution needed – check the flags below.'
+                : 'High risk – review the red flags carefully.'}
+            </p>
+            {result.redFlags?.length > 0 && (
+              <p className="text-xs text-text-secondary mt-1">
+                These issues contributed to the risk score.
+              </p>
+            )}
+          </div>
 
           {result.redFlags?.length > 0 && (
             <GlassCard>
