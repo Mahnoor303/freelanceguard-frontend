@@ -2,52 +2,44 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Shield, MessageSquare, FileText, Search,
   History, Users, Settings, Bookmark, Flag, Home, ShieldCheck,
-  BookOpen,  Video, ScrollText, Map, Calculator, FolderKanban, Briefcase // 👈 add this
+  BookOpen,  Video, ScrollText, Map, Calculator, FolderKanban, Briefcase
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-// Static links – NO Contract Checker, Client Lookup, or Subscription here
-// Sidebar.jsx mein links array ko is se replace karein
 const links = [
-  // === CORE PROTECTION (Most important) ===
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
+  // 1. Rate Calculator (pehle rate set karein)
+  { to: '/rate-calculator', icon: Calculator, label: 'Rate Calc' },
+  // 2. Job Matcher (jobs dekhein)
+  { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
+  // 3. Core Scanners
   { to: '/job-analyzer', icon: Shield, label: 'Job Analyzer' },
   { to: '/message-scanner', icon: MessageSquare, label: 'Message Scanner' },
-
-  // === HISTORY & COMMUNITY ===
+  // 4. History & Reports
   { to: '/history', icon: History, label: 'History' },
   { to: '/saved-reports', icon: Bookmark, label: 'Saved Reports' },
-  { to: '/demo-scans', icon: BookOpen, label: 'Demo Scans' },
+  // 5. Community
   { to: '/reports', icon: Flag, label: 'Community' },
-
-  // === PRODUCTIVITY TOOLS ===
+  // 6. Productivity Tools
   { to: '/portfolio-builder', icon: FolderKanban, label: 'Portfolio' },
-  { to: '/rate-calculator', icon: Calculator, label: 'Rate Calc' },
-  { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
   { to: '/workspace', icon: BookOpen, label: 'Workspace' },
-
-  // === LEARNING & RESOURCES ===
+  // 7. Learning
   { to: '/video-tutorials', icon: Video, label: 'Tutorials' },
   { to: '/contract-templates', icon: ScrollText, label: 'Templates' },
   { to: '/roadmap', icon: Map, label: 'Roadmap' },
-
-  // === ACCOUNT ===
+  // 8. Dashboard (overview)
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
+  // 9. Account
   { to: '/profile', icon: Users, label: 'Profile' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
-
 export default function Sidebar() {
   const { user } = useAuth();
-
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30 sidebar" data-onboarding="sidebar">
-      {/* User name / brand */}
+    <aside className="hidden lg:flex flex-col w-64 bg-black/40 backdrop-blur-md border-r border-white/5 h-screen sticky top-0 z-30 sidebar">
       <div className="p-6 font-heading font-bold text-2xl text-primary">
         {user?.name || 'FreelanceGuard'}
       </div>
-
-      {/* Back to Site */}
       <NavLink
         to="/"
         className="flex items-center gap-3 px-3 py-2 mx-3 rounded-lg text-sm text-gray-400 hover:bg-white/5 hover:text-white transition mb-2"
@@ -75,7 +67,7 @@ export default function Sidebar() {
           </NavLink>
         ))}
 
-        {/* Premium links – only for pro/elite users */}
+        {/* Premium links */}
         {(user?.plan === 'pro' || user?.plan === 'elite') && (
           <>
             <NavLink
