@@ -52,19 +52,19 @@ export default function Settings({ dark, setDark }) {
     toast.success(`Language changed to ${lang === 'en' ? 'English' : lang === 'ur' ? 'Urdu' : lang === 'it' ? 'Italiano' : lang === 'tr' ? 'Türkçe' : lang === 'ar' ? 'العربية' : 'Русский'}`);
   };
 
-  const handleDeleteAccount = async () => {
-    try {
-      await api('/auth/me', { method: 'DELETE' });
-      toast.success('Account deleted successfully');
-      logout();
-      localStorage.clear();
-      navigate('/');
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setShowDeleteConfirm(false);
-    }
-  };
+ const handleDeleteAccount = async () => {
+  try {
+    await api('/auth/delete-account', { method: 'POST' });   // was DELETE, now POST
+    toast.success('Account deleted successfully');
+    logout();
+    localStorage.clear();
+    navigate('/');
+  } catch (err) {
+    toast.error(err.message);
+  } finally {
+    setShowDeleteConfirm(false);
+  }
+};
 
   return (
     <div className="space-y-8">
