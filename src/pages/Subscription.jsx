@@ -1,30 +1,76 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api';
 import { useNavigate } from 'react-router-dom';
-import { Clock, Zap, BarChart3, FileText, Search, ShieldCheck } from 'lucide-react';
+import { Clock, Zap, BarChart3, FileText, Search, ShieldCheck, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+// Plan limits (yeh backend se bhi aa sakte hain, lekin hardcode bhi chalega)
+const PLAN_LIMITS = {
+  free: { jobScans: 5, messageScans: 5, contractScans: 2, clientChecks: 2 },
+  pro: { jobScans: 100, messageScans: 100, contractScans: 50, clientChecks: 50 },
+  elite: { jobScans: Infinity, messageScans: Infinity, contractScans: Infinity, clientChecks: Infinity },
+};
 
 export default function Subscription() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [details, setDetails] = useState(null);
+  const [usage, setUsage] = useState(null);
+  const [loadingUsage, setLoadingUsage] = useState(false);
+
+  const fetchDetails = useCallback(async () => {
+    try {
+      const data = await api('/subscription/details');
+      setDetails(data);
+    } catch (err) {
+      console.error('Failed to fetch subscription details:', err);
+    }
+  }, []);
+
+  const fetchUsage = useCallback(async () => {
+    setLoadingUsage(true);
+    try {
+      // Maan lo aapne backend mein /subscription/usage route banaya hai
+      const data = await api('/subscription/usage');
+      setUsage(data);
+    } catch (err) {
+      toast.error('Failed to fetch usage stats');
+    } finally {
+      setLoadingUsage(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
-      api('/subscription/details')
-        .then(setDetails)
-        .catch(console.error);
+      fetchDetails();
+      fetchUsage();
     }
-  }, [user]);
+  }, [user, fetchDetails, fetchUsage]);
 
-  if (!details) return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  // Refresh button handler
+  const handleRefreshUsage = () => {
+    fetchUsage();
+  };
+
+  if (!details) return <div className="text-center py-20 text-gray-400">Loading subscription...</div>;
 
   const startDate = details.subscriptionStartDate ? new Date(details.subscriptionStartDate) : null;
   const endDate = details.subscriptionEndDate ? new Date(details.subscriptionEndDate) : null;
   const now = new Date();
   const remainingMs = endDate ? endDate.getTime() - now.getTime() : 0;
   const remainingDays = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+
+  const plan = details.plan || 'free';
+  const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
+
+  // usage object se current counts lo, nahi to 0
+  const usageStats = usage || {
+    jobScans: 0,
+    messageScans: 0,
+    contractScans: 0,
+    clientChecks: 0,
+  };
 
   const handleCancel = async () => {
     if (!confirm('Cancel your subscription? You will be downgraded to Free.')) return;
@@ -45,7 +91,7 @@ export default function Subscription() {
       <div className="bg-[#0b0b0b] border border-gray-800 rounded-2xl p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-primary">
-            {details.plan === 'pro' ? 'Pro Shield' : details.plan === 'elite' ? 'Elite Shield' : 'Free Plan'}
+            {plan === 'pro' ? 'Pro Shield' : plan === 'elite' ? 'Elite Shield' : 'Free Plan'}
           </h2>
           <ShieldCheck className="text-primary" size={32} />
         </div>
@@ -67,30 +113,56 @@ export default function Subscription() {
         </div>
       </div>
 
-      {/* Usage Stats */}
+      {/* Usage Stats (Real-time) */}
       <div className="bg-[#0b0b0b] border border-gray-800 rounded-2xl p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Usage Stats</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white">Usage Stats</h2>
+          <button
+            onClick={handleRefreshUsage}
+            disabled={loadingUsage}
+            className="text-gray-400 hover:text-white transition disabled:opacity-50"
+            title="Refresh stats"
+          >
+            <RefreshCw size={18} className={loadingUsage ? 'animate-spin' : ''} />
+          </button>
+        </div>
         <div className="space-y-4">
           {[
-            { label: 'Job Scans', value: details.totalJobScans || 0, icon: FileText },
-            { label: 'Message Scans', value: details.totalMessageScans || 0, icon: FileText },
-            { label: 'Contract Scans', value: details.totalContractScans || 0, icon: FileText },
-            { label: 'Client Checks', value: details.totalClientChecks || 0, icon: Search },
-          ].map((item) => (
-            <div key={item.label}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-400">{item.label}</span>
-                <span className="text-white">{item.value}</span>
+            { label: 'Job Scans', key: 'jobScans', icon: FileText },
+            { label: 'Message Scans', key: 'messageScans', icon: FileText },
+            { label: 'Contract Scans', key: 'contractScans', icon: FileText },
+            { label: 'Client Checks', key: 'clientChecks', icon: Search },
+          ].map(({ label, key, icon: Icon }) => {
+            const used = usageStats[key] || 0;
+            const limit = limits[key];
+            const isUnlimited = limit === Infinity;
+            const percent = isUnlimited ? 100 : Math.min(100, (used / limit) * 100);
+            return (
+              <div key={key}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-400 flex items-center gap-1">
+                    <Icon size={14} /> {label}
+                  </span>
+                  <span className="text-white">
+                    {used}{' '}
+                    {isUnlimited ? '' : `/ ${limit}`}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      isUnlimited ? 'bg-green-400' : used >= limit ? 'bg-red-500' : 'bg-primary'
+                    }`}
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-gray-800 rounded-full h-2">
-                <div
-                  className="bg-primary h-2 rounded-full"
-                  style={{ width: `${Math.min(100, (item.value / 100) * 100)}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+        <p className="text-xs text-gray-500 mt-4">
+          * Free plan limits reset monthly. Pro & Elite limits reset with subscription.
+        </p>
       </div>
 
       {/* Actions */}
