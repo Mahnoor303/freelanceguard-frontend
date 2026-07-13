@@ -9,7 +9,7 @@ import './index.css';   // 👈 THIS IS THE MISSING IMPORT
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <I18nextProvider i18n={i18n}>
-      <BrowserRouter>   {/* no basename for local dev */}
+      <BrowserRouter basename="/freelanceguard-frontend">   {/* no basename for local dev */}
         <App />
       </BrowserRouter>
     </I18nextProvider>
