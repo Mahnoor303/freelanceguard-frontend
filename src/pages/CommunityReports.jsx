@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api } from '../api';
 import {
-  Search, ThumbsUp, Plus, X, Trash2, Shield, User, ExternalLink, Calendar, Flag
+  Search, ThumbsUp, Plus, X, Trash2, Shield, User, ExternalLink, Calendar, Flag, Upload
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -20,8 +20,11 @@ export default function CommunityReports() {
     company: '',
     jobLink: '',
     reason: '',
-    evidence: '',  // URL input
+    evidence: '',
   });
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -39,6 +42,59 @@ export default function CommunityReports() {
   useEffect(() => {
     fetchReports();
   }, []);
+
+  // Drag & drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile && droppedFile.type.startsWith('image/')) {
+      setFile(droppedFile);
+      setPreview(URL.createObjectURL(droppedFile));
+    } else {
+      toast.error('Only image files allowed');
+    }
+  }, []);
+
+  const handleFileSelect = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+    }
+  };
+
+  const uploadFile = async () => {
+    if (!file) return null;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('evidence', file);
+      const res = await fetch('https://freelanceguard.alwaysdata.net/api/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Upload failed');
+      }
+      const data = await res.json();
+      return data.url;
+    } catch (err) {
+      toast.error(err.message);
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleUpvote = async (id, e) => {
     e.stopPropagation();
@@ -59,7 +115,8 @@ export default function CommunityReports() {
     e.stopPropagation();
     if (!confirm('Delete this report?')) return;
     try {
-      await api(`/admin/reports/${id}`, { method: 'DELETE' });
+      // Ab owner/admin dono delete kar sakte hain
+      await api(`/community/${id}`, { method: 'DELETE' });
       setReports((prev) => prev.filter((r) => r._id !== id));
       toast.success('Report deleted');
     } catch (err) {
@@ -84,9 +141,16 @@ export default function CommunityReports() {
     }
 
     try {
+      let evidenceUrl = form.evidence;
+      if (file) {
+        const uploadedUrl = await uploadFile();
+        if (uploadedUrl) evidenceUrl = uploadedUrl;
+        else return;   // upload fail -> stop
+      }
+
       await api('/community', {
         method: 'POST',
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, evidence: evidenceUrl }),
       });
       toast.success('Report submitted!');
       setShowForm(false);
@@ -98,6 +162,8 @@ export default function CommunityReports() {
         reason: '',
         evidence: '',
       });
+      setFile(null);
+      setPreview(null);
       fetchReports();
     } catch (err) {
       toast.error(err.message);
@@ -167,6 +233,7 @@ export default function CommunityReports() {
                       </span>
                     </div>
                   </div>
+                  {/* Delete button visible only if owner or admin */}
                   {(user?._id === report.userId?._id || user?.role === 'admin') && (
                     <button
                       onClick={(e) => handleDelete(report._id, e)}
@@ -325,24 +392,53 @@ export default function CommunityReports() {
                 />
               </div>
 
-              {/* Evidence (URL) */}
+              {/* Evidence – Drag & Drop */}
               <div>
-                <label className="text-sm text-text-secondary mb-1 block">Evidence (Screenshot URL)</label>
-                <input
-                  type="url"
-                  placeholder="https://imgur.com/..."
-                  className="w-full p-3 rounded-xl bg-bg-secondary border border-border text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-primary"
-                  value={form.evidence}
-                  onChange={(e) => setForm({ ...form, evidence: e.target.value })}
-                />
-                <p className="text-xs text-text-secondary mt-1">Optional – paste a link to your screenshot</p>
+                <label className="text-sm text-text-secondary mb-1 block">Evidence (Screenshot)</label>
+                <div
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition ${
+                    preview ? 'border-primary/50 bg-primary/5' : 'border-border hover:border-primary/30'
+                  }`}
+                  onClick={() => document.getElementById('evidence-file').click()}
+                >
+                  <input
+                    id="evidence-file"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                  />
+                  {preview ? (
+                    <div className="space-y-2">
+                      <img src={preview} alt="Preview" className="max-h-32 mx-auto rounded-lg" />
+                      <p className="text-xs text-text-secondary">Click or drop to change image</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Upload className="mx-auto text-text-secondary" size={32} />
+                      <p className="text-sm text-text-secondary">Drag & drop a screenshot, or click to browse</p>
+                      <p className="text-xs text-text-secondary">Only image files (jpg, png, gif)</p>
+                    </div>
+                  )}
+                </div>
+                {file && <p className="text-xs text-text-secondary mt-1">{file.name}</p>}
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-primary text-black py-3 rounded-xl font-semibold hover:bg-primary-dark transition"
+                disabled={uploading}
+                className="w-full bg-primary text-black py-3 rounded-xl font-semibold hover:bg-primary-dark transition disabled:opacity-70 flex items-center justify-center gap-2"
               >
-                Submit Report
+                {uploading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    Uploading...
+                  </>
+                ) : (
+                  'Submit Report'
+                )}
               </button>
             </form>
           </div>
@@ -394,7 +490,7 @@ export default function CommunityReports() {
                 <div>
                   <span className="text-text-secondary">Evidence:</span>
                   <a href={selectedReport.evidence} target="_blank" className="text-primary block mt-1 break-all hover:underline">
-                    {selectedReport.evidence}
+                    View Screenshot
                   </a>
                 </div>
               )}
