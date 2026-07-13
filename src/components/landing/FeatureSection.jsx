@@ -1,12 +1,36 @@
 import { Shield, MessageSquare, FileText, Search, BarChart3, Users } from 'lucide-react';
 
 const features = [
-  { icon: Shield, title: 'Job Post Analyzer', desc: 'Instant risk score, scam indicators.' },
-  { icon: MessageSquare, title: 'Message Scanner', desc: 'Detect manipulation & urgency.' },
-  { icon: FileText, title: 'Contract Checker', desc: 'Find hidden dangerous clauses.' },
-  { icon: Search, title: 'Client Trust Checker', desc: 'Verify clients before you start.' },
-  { icon: BarChart3, title: 'Dashboard', desc: 'Full scan history & insights.' },
-  { icon: Users, title: 'Community Reports', desc: 'Crowdsourced scam database.' },
+  {
+    icon: Shield,
+    title: 'Job Post Analyzer',
+    desc: 'AI scans job posts for red flags like fake payments, requests for personal ID/passport, unrealistic salary, and unverified companies. You’ll get a clear risk percentage, a list of flagged issues, and an AI summary.',
+  },
+  {
+    icon: MessageSquare,
+    title: 'Message Scanner',
+    desc: 'Copy‑paste any client message. Our AI checks for manipulation tactics, urgency traps, off‑platform payment requests, and phishing patterns. Instantly see a safety score and highlighted warning signs.',
+  },
+  {
+    icon: FileText,
+    title: 'Contract Checker',
+    desc: 'Paste your contract text or upload a .txt file. The AI reviews clauses for IP theft, unfair termination terms, delayed payment schedules, and hidden penalties. You get a detailed breakdown of each risky clause, plus an overall contract safety score.',
+  },
+  {
+    icon: Search,
+    title: 'Client Trust Checker',
+    desc: 'Enter a company name, domain, or email. Our system checks community‑reported scams, verifies online presence, and flags unregistered or brand‑new entities. You’ll see a trustworthiness percentage and specific reasons why the client may (or may not) be reliable.',
+  },
+  {
+    icon: BarChart3,
+    title: 'Dashboard',
+    desc: 'Track all your scans, see trends, and access detailed reports and history.',
+  },
+  {
+    icon: Users,
+    title: 'Community Reports',
+    desc: 'A crowdsourced database of scam alerts and legit job reviews. Search by platform, company, or keyword. Each report includes the job link, reason, evidence screenshots, and reliability status. Contribute your own reports to help the community.',
+  },
 ];
 
 export default function FeatureSection() {
