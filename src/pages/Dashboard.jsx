@@ -88,12 +88,7 @@ export default function Dashboard() {
         <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg py-2 overflow-hidden">
           <div className="animate-marquee">
             <span className="text-yellow-400 font-medium mx-4">
-              ⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
-              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
-              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
-              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
-              Unlimited scans, contract analysis, and priority AI support unlocked.⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;
-              Unlimited scans, contract analysis, and priority AI support unlocked.
+              ⭐ Pro Shield Active &nbsp;&nbsp; Thank you for upgrading. Your account is now protected with Pro Shield. &nbsp;&nbsp;Unlimited scans, contract analysis, and priority AI support unlocked.
             </span>
           </div>
         </div>

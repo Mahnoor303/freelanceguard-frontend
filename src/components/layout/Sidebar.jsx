@@ -22,8 +22,8 @@ const links = [
 
   // === PRODUCTIVITY TOOLS ===
   { to: '/portfolio-builder', icon: FolderKanban, label: 'Portfolio' },
-  { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
   { to: '/rate-calculator', icon: Calculator, label: 'Rate Calc' },
+  { to: '/job-matcher', icon: Briefcase, label: 'Job Matcher' },
   { to: '/workspace', icon: BookOpen, label: 'Workspace' },
 
   // === LEARNING & RESOURCES ===
