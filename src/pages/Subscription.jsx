@@ -1,11 +1,10 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api';
 import { useNavigate } from 'react-router-dom';
-import { Clock, Zap, BarChart3, FileText, Search, ShieldCheck, RefreshCw } from 'lucide-react';
+import { FileText, Search, ShieldCheck, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-// Plan limits (yeh backend se bhi aa sakte hain, lekin hardcode bhi chalega)
 const PLAN_LIMITS = {
   free: { jobScans: 5, messageScans: 5, contractScans: 2, clientChecks: 2 },
   pro: { jobScans: 100, messageScans: 100, contractScans: 50, clientChecks: 50 },
@@ -16,44 +15,24 @@ export default function Subscription() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [details, setDetails] = useState(null);
-  const [usage, setUsage] = useState(null);
-  const [loadingUsage, setLoadingUsage] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const fetchDetails = useCallback(async () => {
+  const fetchDetails = async () => {
     try {
       const data = await api('/subscription/details');
       setDetails(data);
     } catch (err) {
-      console.error('Failed to fetch subscription details:', err);
-    }
-  }, []);
-
-  const fetchUsage = useCallback(async () => {
-    setLoadingUsage(true);
-    try {
-      // Maan lo aapne backend mein /subscription/usage route banaya hai
-      const data = await api('/subscription/usage');
-      setUsage(data);
-    } catch (err) {
-      toast.error('Failed to fetch usage stats');
+      toast.error('Failed to load subscription details');
     } finally {
-      setLoadingUsage(false);
+      setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      fetchDetails();
-      fetchUsage();
-    }
-  }, [user, fetchDetails, fetchUsage]);
-
-  // Refresh button handler
-  const handleRefreshUsage = () => {
-    fetchUsage();
   };
 
-  if (!details) return <div className="text-center py-20 text-gray-400">Loading subscription...</div>;
+  useEffect(() => {
+    if (user) fetchDetails();
+  }, [user]);
+
+  if (loading || !details) return <div className="text-center py-20 text-gray-400">Loading...</div>;
 
   const startDate = details.subscriptionStartDate ? new Date(details.subscriptionStartDate) : null;
   const endDate = details.subscriptionEndDate ? new Date(details.subscriptionEndDate) : null;
@@ -64,12 +43,12 @@ export default function Subscription() {
   const plan = details.plan || 'free';
   const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 
-  // usage object se current counts lo, nahi to 0
-  const usageStats = usage || {
-    jobScans: 0,
-    messageScans: 0,
-    contractScans: 0,
-    clientChecks: 0,
+  // Usage data directly from details
+  const usage = {
+    jobScans: details.totalJobScans || 0,
+    messageScans: details.totalMessageScans || 0,
+    contractScans: details.totalContractScans || 0,
+    clientChecks: details.totalClientChecks || 0,
   };
 
   const handleCancel = async () => {
@@ -113,17 +92,16 @@ export default function Subscription() {
         </div>
       </div>
 
-      {/* Usage Stats (Real-time) */}
+      {/* Usage Stats (from details, real-time refresh via fetchDetails) */}
       <div className="bg-[#0b0b0b] border border-gray-800 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white">Usage Stats</h2>
           <button
-            onClick={handleRefreshUsage}
-            disabled={loadingUsage}
-            className="text-gray-400 hover:text-white transition disabled:opacity-50"
+            onClick={() => fetchDetails()}
+            className="text-gray-400 hover:text-white transition"
             title="Refresh stats"
           >
-            <RefreshCw size={18} className={loadingUsage ? 'animate-spin' : ''} />
+            <RefreshCw size={18} />
           </button>
         </div>
         <div className="space-y-4">
@@ -133,7 +111,7 @@ export default function Subscription() {
             { label: 'Contract Scans', key: 'contractScans', icon: FileText },
             { label: 'Client Checks', key: 'clientChecks', icon: Search },
           ].map(({ label, key, icon: Icon }) => {
-            const used = usageStats[key] || 0;
+            const used = usage[key] || 0;
             const limit = limits[key];
             const isUnlimited = limit === Infinity;
             const percent = isUnlimited ? 100 : Math.min(100, (used / limit) * 100);
