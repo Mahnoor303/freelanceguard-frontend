@@ -19,7 +19,6 @@ const links = [
   // === HISTORY & COMMUNITY ===
   { to: '/history', icon: History, label: 'History' },
   { to: '/saved-reports', icon: Bookmark, label: 'Saved Reports' },
-  { to: '/demo-scans', icon: BookOpen, label: 'Demo Scans' },
   { to: '/reports', icon: Flag, label: 'Community' },
 
   // === PRODUCTIVITY TOOLS ===
