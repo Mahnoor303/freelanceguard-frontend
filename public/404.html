@@ -2,16 +2,15 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redirecting...</title>
+  <title>FreelanceGuard</title>
   <script>
-    // If the URL doesn't contain the basename, redirect to it
     (function() {
       var base = '/freelanceguard-frontend';
-      if (location.pathname.indexOf(base) !== 0) {
-        // Preserve any query string and hash
-        var newPath = base + location.pathname + location.search + location.hash;
-        window.location.replace(newPath);
-      }
+      var currentPath = window.location.pathname;
+      // Remove the base from the path if it's already there (avoids double basename)
+      var pathWithoutBase = currentPath.replace(new RegExp('^' + base), '');
+      var newURL = base + pathWithoutBase + window.location.search + window.location.hash;
+      window.location.replace(newURL);
     })();
   </script>
 </head>

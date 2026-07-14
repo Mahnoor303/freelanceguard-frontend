@@ -9,8 +9,8 @@ export default function AdminScamDatabase() {
 
   const fetchReports = async () => {
     try {
-      // Fetch all reports and filter only scam type, or use a new endpoint if you prefer
-      const data = await adminApi('/reports');
+      const data = await adminApi('/reports');   // same as admin reports endpoint
+      // keep only scam reports
       setReports(data.filter(r => r.type === 'scam'));
     } catch (err) {
       toast.error('Failed to load scam database');
@@ -29,10 +29,9 @@ export default function AdminScamDatabase() {
   };
 
   const toggleVerify = async (id, currentStatus) => {
-    const endpoint = `/reports/${id}/verify`;
     try {
-      await adminApi(endpoint, { method: 'PATCH' });
-      fetchReports();
+      await adminApi(`/reports/${id}/verify`, { method: 'PATCH' });
+      fetchReports();   // refresh the list
       toast.success(currentStatus ? 'Unverified' : 'Verified');
     } catch (err) { toast.error(err.message); }
   };
