@@ -11,9 +11,10 @@ export default function AdminReports() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewReport, setViewReport] = useState(null);
 
+  useEffect(() => {
   const stored = JSON.parse(localStorage.getItem('adminReports') || '[]');
-setReports(stored);
-
+  setReports(stored);
+}, []);
   const updateStatus = async (id, status) => {
     try {
       const endpoint = status === 'approved' ? `/reports/${id}/approve` : `/reports/${id}/reject`;
