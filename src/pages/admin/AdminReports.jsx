@@ -11,11 +11,8 @@ export default function AdminReports() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewReport, setViewReport] = useState(null);
 
-  useEffect(() => {
-    adminApi('/reports')
-      .then(setReports)
-      .catch(console.error);
-  }, []);
+  const stored = JSON.parse(localStorage.getItem('adminReports') || '[]');
+setReports(stored);
 
   const updateStatus = async (id, status) => {
     try {

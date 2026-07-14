@@ -17,7 +17,8 @@ export default function AdminScamDatabase() {
     }
   };
 
-  useEffect(() => { fetchReports(); }, []);
+  const stored = JSON.parse(localStorage.getItem('adminScamReports') || '[]');
+setReports(stored);
 
   const deleteReport = async (id) => {
     if (!confirm('Delete this record?')) return;
